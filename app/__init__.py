@@ -30,7 +30,7 @@ def create_app(config_class=Config):
     from app.home import home_bp
     app.register_blueprint(home_bp, url_prefix='/home') # All home routes will be under /home
 
-    # A simple route to home page
+    # A simple route to about page
     @app.route('/')
     def index():
         return render_template('about.html', title='About Page')

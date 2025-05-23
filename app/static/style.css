@@ -45,3 +45,6 @@ a:hover {
     color: var(--dark-secondary-color);
 }
 
+footer a {
+    text-decoration: none;
+}
