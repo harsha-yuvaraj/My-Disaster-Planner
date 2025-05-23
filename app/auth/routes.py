@@ -5,6 +5,8 @@ from werkzeug.security import generate_password_hash, check_password_hash # For 
 from app import db
 from app.auth import auth_bp
 from app.models import User
+from app.utils import send_password_reset_email 
+from datetime import datetime
 import re
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -45,7 +47,73 @@ def login():
 
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('home.main'))
+
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            # The send_password_reset_email function now generates the token and attempts to send.
+            # We will only commit the token to the database if the send is successful.
+            response = send_password_reset_email(user)
+            
+            # A successful SendGrid API call returns a 2xx status code (usually 202 Accepted).
+            if response and 200 <= response.status_code < 300:
+                db.session.commit()
+                flash('A password reset link has been sent to your email (also check spam folder). Please wait atleast 60 seconds before requesting a new link.', 'info')
+            else:
+                db.session.rollback() # IMPORTANT: Do not save the token if the email failed to send.
+                flash('Sorry, there was an error sending the password reset email. Please try again.', 'danger')
+        else:
+            # For security, show the same success message whether the user exists or not.
+            flash('A password reset link has been sent to your email.', 'info')
+
+        return redirect(url_for('auth.login'))
+
     return render_template('auth/forgotPassword.html')
+
+@auth_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home.main'))
+
+    user = User.verify_reset_token(token)
+    if not user:
+        flash('That is an invalid or expired link. Request a new link below.', 'warning')
+        return redirect(url_for('auth.forgot_password'))
+
+    if request.method == 'POST':
+        password = request.form.get('password')
+        errors = False
+        if not password:
+            flash('Password field is required.', 'danger')
+            errors = True
+        
+        # Check password complexity with regex
+        if password and not re.match(r'^(?=.*\d)(?=.*[a-zA-Z]).{10,}$', password):
+            flash('Password must be at least 10 characters long and contain both letters and numbers.', 'danger')
+            errors = True
+
+        if errors:
+            return render_template('auth/resetPassword.html', token=token)
+
+        try:
+            user.set_password(password)
+            user.reset_token = None
+            user.reset_time_limit = None
+            db.session.commit()
+            
+            flash('Your password has been updated successfully.', 'success')
+            return redirect(url_for('auth.login'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'An unexpected error occurred. Please try again.', 'danger')
+            return render_template('auth/resetPassword.html', token=token)
+
+    # For a GET request, show the form
+    return render_template('auth/resetPassword.html', token=token)
 
 @auth_bp.route('/logout')
 def logout():
@@ -66,6 +134,7 @@ def register():
         last_name = form_data.get('last_name')
         email = form_data.get('email')
         gender = form_data.get('gender')
+        dob = form_data.get('dob') 
         street_address = form_data.get('street_address')
         city = form_data.get('city')
         state = form_data.get('state')
@@ -79,7 +148,7 @@ def register():
         # Check required fields
         required_fields = {
             'First Name': first_name, 'Last Name': last_name, 'Email': email,
-            'Gender': gender, 'Street Address': street_address, 'City': city,
+            'Gender': gender, 'Date of Birth (age verification purpose)': dob, 'Street Address': street_address, 'City': city,
             'State': state, 'Zip Code': zip_code, 'Password': password
         }
         for field_name, value in required_fields.items():
@@ -87,6 +156,10 @@ def register():
                 flash(f'{field_name} is required.', 'danger')
                 errors = True
 
+        if password and not re.match(r'^(?=.*\d)(?=.*[a-zA-Z]).{10,}$', password):
+             flash('Password must be at least 10 characters long and contain both letters and numbers.', 'danger')
+             errors = True
+             
         # Check password match
         if password != password2:
             flash('Passwords do not match.', 'danger')
@@ -109,7 +182,7 @@ def register():
         if errors:
             # If there are any errors, re-render the form.
             # The 'value' attributes in the HTML will repopulate the fields.
-            return render_template('auth/register.html', title='Create Your Account')
+            return render_template('auth/register.html', max_date=datetime.now().strftime('%Y-%m-%d'))
 
         try:
             # All checks passed, create the new user object
@@ -118,6 +191,7 @@ def register():
                 last_name=last_name,
                 email=email,
                 gender=gender,
+                date_of_birth=datetime.strptime(dob, '%Y-%m-%d').date(),
                 street_address=street_address,
                 city=city,
                 state=state,
@@ -137,4 +211,4 @@ def register():
             flash(f'An unexpected error occurred. Please try again. Error: {e}', 'danger')
 
     # For a GET request, just render the blank form
-    return render_template('auth/register.html', title='Create Your Account')
+    return render_template('auth/register.html', max_date=datetime.now().strftime('%Y-%m-%d')) 

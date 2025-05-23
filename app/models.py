@@ -1,7 +1,7 @@
 from app import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 import uuid
 
 @login_manager.user_loader
@@ -18,6 +18,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(150), index=True, unique=True, nullable=False)
     gender = db.Column(db.String(8), nullable=False) 
     phone_number = db.Column(db.String(10), nullable=True) 
+    date_of_birth = db.Column(db.Date, nullable=False) 
 
     # Address Information
     street_address = db.Column(db.String(128), nullable=False)
@@ -27,11 +28,11 @@ class User(UserMixin, db.Model):
 
     # Password and Timestamps
     password_hash = db.Column(db.String(256))
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime(), default=lambda: datetime.now())
 
     # Password Reset Fields
     reset_token = db.Column(db.String(36), nullable=True) # To store UUID as string
-    reset_time_limit = db.Column(db.DateTime, nullable=True)
+    reset_time_limit = db.Column(db.DateTime(), nullable=True)
 
     # Add __table_args__ to define constraints and indexes with names
     __table_args__ = (
@@ -51,15 +52,22 @@ class User(UserMixin, db.Model):
     def get_reset_token(self, expires_in_seconds=900): # Default to 15 minutes
         """Generates a password reset token and sets its expiration."""
         self.reset_token = str(uuid.uuid4())
-        self.reset_time_limit = datetime.now(timezone.utc) + timedelta(seconds=expires_in_seconds)
+        self.reset_time_limit = datetime.now() + timedelta(seconds=expires_in_seconds)
         return self.reset_token
 
     @staticmethod
     def verify_reset_token(token):
         """Verifies a password reset token."""
         user = User.query.filter_by(reset_token=token).first()
-        if user and user.reset_time_limit and user.reset_time_limit > datetime.now(timezone.utc):
-            return user
+        if user:
+            # Check if the token is still valid
+            if user.reset_time_limit and user.reset_time_limit > datetime.now():
+                return user
+            else:
+                user.reset_token = None
+                user.reset_time_limit = None
+                db.session.commit()
+            
         return None # Token is invalid or expired
 
     def __repr__(self):

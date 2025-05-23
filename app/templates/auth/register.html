@@ -43,6 +43,13 @@
                         </select>
                     </div>
 
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" id="dob" name="dob" 
+                               placeholder="Date of Birth" value="{{ request.form.dob or '' }}"
+                               max="{{ max_date }}" required>
+                        <label for="dob">Date of Birth (age verification purpose) <span class="text-danger">*</span></label>
+                    </div>
+
                     <div class="form-floating mb-3 ">
                         <input type="text" class="form-control form-control-lg" id="street_address" name="street_address" placeholder="Street Address" value="{{ request.form.street_address or '' }}" required>
                         <label for="street_address">Street Address <span class="text-danger">*</span></label>
@@ -140,12 +147,12 @@
                     </div>
 
                     <div class="form-floating mb-3 ">
-                        <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Password" required>
+                        <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Password" minlength="10" pattern="(?=.*\d)(?=.*[a-zA-Z]).{10,}" title="Password must be at least 10 characters long and include both letters and numbers." required >
                         <label for="password">Password <span class="text-danger">*</span></label>
                     </div>
 
                     <div class="form-floating mb-3 ">
-                        <input type="password" class="form-control form-control-lg" id="password2" name="password2" placeholder="Repeat Password" required>
+                        <input type="password" class="form-control form-control-lg" id="password2" name="password2" placeholder="Repeat Password" minlength="10" pattern="(?=.*\d)(?=.*[a-zA-Z]).{10,}" title="Password must be at least 10 characters long and include both letters and numbers." required>
                         <label for="password2">Repeat Password <span class="text-danger">*</span></label>
                     </div>
 
