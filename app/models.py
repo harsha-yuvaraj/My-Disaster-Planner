@@ -1,8 +1,8 @@
-# app/models.py
 from app import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import uuid
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -11,19 +11,58 @@ def load_user(user_id):
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), index=True, unique=True, nullable=False)
-    password_hash = db.Column(db.String(256)) # Increased length for stronger hashes
+    
+    # Personal Information
+    first_name = db.Column(db.String(60), nullable=False)
+    last_name = db.Column(db.String(60), nullable=False)
+    email = db.Column(db.String(150), index=True, unique=True, nullable=False)
+    gender = db.Column(db.String(8), nullable=False) 
+    phone_number = db.Column(db.String(10), nullable=True) 
+
+    # Address Information
+    street_address = db.Column(db.String(128), nullable=False)
+    city = db.Column(db.String(64), nullable=False)
+    state = db.Column(db.String(2), nullable=False) 
+    zip_code = db.Column(db.String(5), nullable=False) 
+
+    # Password and Timestamps
+    password_hash = db.Column(db.String(256))
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Password Reset Fields
+    reset_token = db.Column(db.String(36), nullable=True) # To store UUID as string
+    reset_time_limit = db.Column(db.DateTime, nullable=True)
+
+    # Add __table_args__ to define constraints and indexes with names
+    __table_args__ = (
+        db.UniqueConstraint('reset_token', name='uq_user_reset_token'),
+        db.Index('ix_user_reset_token', 'reset_token', unique=True), # This creates a unique index
+    )
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        if self.password_hash is None: # Handle users created without a password (e.g., social logins later)
+        if self.password_hash is None:
             return False
         return check_password_hash(self.password_hash, password)
 
+    # Example methods for handling reset tokens
+    def get_reset_token(self, expires_in_seconds=900): # Default to 15 minutes
+        """Generates a password reset token and sets its expiration."""
+        self.reset_token = str(uuid.uuid4())
+        self.reset_time_limit = datetime.now(timezone.utc) + timedelta(seconds=expires_in_seconds)
+        return self.reset_token
+
+    @staticmethod
+    def verify_reset_token(token):
+        """Verifies a password reset token."""
+        user = User.query.filter_by(reset_token=token).first()
+        if user and user.reset_time_limit and user.reset_time_limit > datetime.now(timezone.utc):
+            return user
+        return None # Token is invalid or expired
+
     def __repr__(self):
-        return f'<User {self.email}>'
+        return f'<User {self.first_name} {self.last_name} - ({self.email})>'
 
 # Add other models below as needed
