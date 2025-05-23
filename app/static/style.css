@@ -1,0 +1,47 @@
+/* Theme 1: Serene Blue & Sage */
+:root {
+    --primary-color: hsl(210, 50%, 45%);      /* Trustworthy Blue: #3A74A8 */
+    --secondary-color: #1c65a6;   
+    --dark-secondary-color: #0e65b1; 
+    --background-color: hsl(0, 0%, 98%);
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: "Arial", verdana;;
+}
+
+.logo-color {
+    color: var(--primary-color);
+}
+
+.navbar-light {
+    background-color: var(--background-color) !important;
+    border-bottom: 5px solid var(--primary-color);
+}
+
+.nav-link.active {
+    color: var(--primary-color) !important;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--dark-secondary-color);
+    font-weight: 500;
+}
+
+.auth button {
+   background-color: var(--primary-color);
+   font-size: 1.2em;
+   color: white;
+}
+
+.auth button:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+a:hover {
+    color: var(--dark-secondary-color);
+}
+

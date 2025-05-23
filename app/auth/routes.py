@@ -30,11 +30,15 @@ def login():
         login_user(user, remember=remember_me)
         next_page = request.args.get('next')
         if not next_page or not next_page.startswith('/'):
-            next_page = url_for('index')
+            next_page = url_for('home.main')
         flash('Login successful!', 'success')
         return redirect(next_page)
 
     return render_template('auth/login.html', title='Sign In')
+
+@auth_bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    return render_template('auth/forgotPassword.html')
 
 @auth_bp.route('/logout')
 def logout():

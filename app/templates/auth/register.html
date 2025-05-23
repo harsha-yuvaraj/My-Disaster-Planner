@@ -2,40 +2,163 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
-        <h2 class="mb-4 text-center">{{ title }}</h2>
+    <div class="col-md-8 col-lg-7"> 
+        <h2 class="mb-2 text-center logo-color">Create Your Account</h2>
+        <p class="text-center custom-font-size-sm">
+            Already have an account? <a href="{{ url_for('auth.login') }}">Sign In!</a>
+        </p>
+
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 <form method="POST" action="{{ url_for('auth.register') }}">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" value="{{ username or '' }}" required>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token or g.csrf_token or '' }}">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 ">
+                                <input type="text" class="form-control form-control-lg" id="first_name" name="first_name" placeholder="First Name" value="{{ request.form.first_name or '' }}" required>
+                                <label for="first_name">First Name <span class="text-danger">*</span></label>
+                            </div>
                         </div>
-
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ email or '' }}" required>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 ">
+                                <input type="text" class="form-control form-control-lg" id="last_name" name="last_name" placeholder="Last Name" value="{{ request.form.last_name or '' }}" required>
+                                <label for="last_name">Last Name <span class="text-danger">*</span></label>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="form-floating mb-3 ">
+                        <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="name@example.com" value="{{ request.form.email or email or '' }}" required>
+                        <label for="email">Email address <span class="text-danger">*</span></label>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="password2" class="form-label">Repeat Password</label>
-                        <input type="password" class="form-control" id="password2" name="password2" required>
+                    <div class="mb-3 ">
+                        <label for="gender">Gender <span class="text-danger">*</span></label>
+                        <select class="form-select" id="gender" name="gender" required>
+                            <option value="" disabled {{ 'selected' if not request.form.gender else '' }}>Select Gender</option>
+                            <option value="male" {{ 'selected' if request.form.gender == 'male' else '' }}>Male</option>
+                            <option value="female" {{ 'selected' if request.form.gender == 'female' else '' }}>Female</option>
+                            <option value="other" {{ 'selected' if request.form.gender == 'other' else '' }}>Other</option>
+                        </select>
                     </div>
 
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Register</button>
+                    <div class="form-floating mb-3 ">
+                        <input type="text" class="form-control form-control-lg" id="street_address" name="street_address" placeholder="Street Address" value="{{ request.form.street_address or '' }}" required>
+                        <label for="street_address">Street Address <span class="text-danger">*</span></label>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 ">
+                                <input type="text" class="form-control form-control-lg" id="city" name="city" placeholder="City" value="{{ request.form.city or '' }}" required>
+                                <label for="city">City <span class="text-danger">*</span></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3 ">
+                                <label for="state">State <span class="text-danger">*</span></label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="" disabled {{ 'selected' if not request.form.state else '' }}>Select State</option>
+                                    <option value="AL" {{ 'selected' if request.form.state == 'AL' else '' }}>Alabama</option>
+                                    <option value="AK" {{ 'selected' if request.form.state == 'AK' else '' }}>Alaska</option>
+                                    <option value="AZ" {{ 'selected' if request.form.state == 'AZ' else '' }}>Arizona</option>
+                                    <option value="AR" {{ 'selected' if request.form.state == 'AR' else '' }}>Arkansas</option>
+                                    <option value="CA" {{ 'selected' if request.form.state == 'CA' else '' }}>California</option>
+                                    <option value="CO" {{ 'selected' if request.form.state == 'CO' else '' }}>Colorado</option>
+                                    <option value="CT" {{ 'selected' if request.form.state == 'CT' else '' }}>Connecticut</option>
+                                    <option value="DE" {{ 'selected' if request.form.state == 'DE' else '' }}>Delaware</option>
+                                    <option value="FL" {{ 'selected' if request.form.state == 'FL' else '' }}>Florida</option>
+                                    <option value="GA" {{ 'selected' if request.form.state == 'GA' else '' }}>Georgia</option>
+                                    <option value="HI" {{ 'selected' if request.form.state == 'HI' else '' }}>Hawaii</option>
+                                    <option value="ID" {{ 'selected' if request.form.state == 'ID' else '' }}>Idaho</option>
+                                    <option value="IL" {{ 'selected' if request.form.state == 'IL' else '' }}>Illinois</option>
+                                    <option value="IN" {{ 'selected' if request.form.state == 'IN' else '' }}>Indiana</option>
+                                    <option value="IA" {{ 'selected' if request.form.state == 'IA' else '' }}>Iowa</option>
+                                    <option value="KS" {{ 'selected' if request.form.state == 'KS' else '' }}>Kansas</option>
+                                    <option value="KY" {{ 'selected' if request.form.state == 'KY' else '' }}>Kentucky</option>
+                                    <option value="LA" {{ 'selected' if request.form.state == 'LA' else '' }}>Louisiana</option>
+                                    <option value="ME" {{ 'selected' if request.form.state == 'ME' else '' }}>Maine</option>
+                                    <option value="MD" {{ 'selected' if request.form.state == 'MD' else '' }}>Maryland</option>
+                                    <option value="MA" {{ 'selected' if request.form.state == 'MA' else '' }}>Massachusetts</option>
+                                    <option value="MI" {{ 'selected' if request.form.state == 'MI' else '' }}>Michigan</option>
+                                    <option value="MN" {{ 'selected' if request.form.state == 'MN' else '' }}>Minnesota</option>
+                                    <option value="MS" {{ 'selected' if request.form.state == 'MS' else '' }}>Mississippi</option>
+                                    <option value="MO" {{ 'selected' if request.form.state == 'MO' else '' }}>Missouri</option>
+                                    <option value="MT" {{ 'selected' if request.form.state == 'MT' else '' }}>Montana</option>
+                                    <option value="NE" {{ 'selected' if request.form.state == 'NE' else '' }}>Nebraska</option>
+                                    <option value="NV" {{ 'selected' if request.form.state == 'NV' else '' }}>Nevada</option>
+                                    <option value="NH" {{ 'selected' if request.form.state == 'NH' else '' }}>New Hampshire</option>
+                                    <option value="NJ" {{ 'selected' if request.form.state == 'NJ' else '' }}>New Jersey</option>
+                                    <option value="NM" {{ 'selected' if request.form.state == 'NM' else '' }}>New Mexico</option>
+                                    <option value="NY" {{ 'selected' if request.form.state == 'NY' else '' }}>New York</option>
+                                    <option value="NC" {{ 'selected' if request.form.state == 'NC' else '' }}>North Carolina</option>
+                                    <option value="ND" {{ 'selected' if request.form.state == 'ND' else '' }}>North Dakota</option>
+                                    <option value="OH" {{ 'selected' if request.form.state == 'OH' else '' }}>Ohio</option>
+                                    <option value="OK" {{ 'selected' if request.form.state == 'OK' else '' }}>Oklahoma</option>
+                                    <option value="OR" {{ 'selected' if request.form.state == 'OR' else '' }}>Oregon</option>
+                                    <option value="PA" {{ 'selected' if request.form.state == 'PA' else '' }}>Pennsylvania</option>
+                                    <option value="RI" {{ 'selected' if request.form.state == 'RI' else '' }}>Rhode Island</option>
+                                    <option value="SC" {{ 'selected' if request.form.state == 'SC' else '' }}>South Carolina</option>
+                                    <option value="SD" {{ 'selected' if request.form.state == 'SD' else '' }}>South Dakota</option>
+                                    <option value="TN" {{ 'selected' if request.form.state == 'TN' else '' }}>Tennessee</option>
+                                    <option value="TX" {{ 'selected' if request.form.state == 'TX' else '' }}>Texas</option>
+                                    <option value="UT" {{ 'selected' if request.form.state == 'UT' else '' }}>Utah</option>
+                                    <option value="VT" {{ 'selected' if request.form.state == 'VT' else '' }}>Vermont</option>
+                                    <option value="VA" {{ 'selected' if request.form.state == 'VA' else '' }}>Virginia</option>
+                                    <option value="WA" {{ 'selected' if request.form.state == 'WA' else '' }}>Washington</option>
+                                    <option value="WV" {{ 'selected' if request.form.state == 'WV' else '' }}>West Virginia</option>
+                                    <option value="WI" {{ 'selected' if request.form.state == 'WI' else '' }}>Wisconsin</option>
+                                    <option value="WY" {{ 'selected' if request.form.state == 'WY' else '' }}>Wyoming</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                             <div class="form-floating mb-3 ">
+                                <input type="text" class="form-control form-control-lg" id="zip_code" name="zip_code" placeholder="Zip Code" value="{{ request.form.zip_code or '' }}" required pattern="[0-9]{5}" maxlength="5" inputmode="numeric">
+                                <label for="zip_code">Zip Code (5 digits) <span class="text-danger">*</span></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 ">
+                               <input type="tel" 
+                                      class="form-control form-control-lg" 
+                                      id="phone_number" 
+                                      name="phone_number" 
+                                      placeholder="Phone Number (10 digits)" 
+                                      value="{{ request.form.phone_number or '' }}"
+                                      pattern="[0-9]{10}" 
+                                      maxlength="10"
+                                      inputmode="numeric"
+                                      title="Please enter a 10-digit phone number.">
+                                <label for="phone_number">Phone Number (Optional)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-3 ">
+                        <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Password" required>
+                        <label for="password">Password <span class="text-danger">*</span></label>
+                    </div>
+
+                    <div class="form-floating mb-3 ">
+                        <input type="password" class="form-control form-control-lg" id="password2" name="password2" placeholder="Repeat Password" required>
+                        <label for="password2">Repeat Password <span class="text-danger">*</span></label>
+                    </div>
+
+                    <div class="d-grid auth mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-person-plus-fill"></i>
+                            Register
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
-        <p class="mt-3 text-center">
-            Already have an account? <a href="{{ url_for('auth.login') }}">Sign In!</a>
-        </p>
+
     </div>
 </div>
 {% endblock %}

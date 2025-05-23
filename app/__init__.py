@@ -23,10 +23,14 @@ def create_app(config_class=Config):
     from app.auth import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth') # All auth routes will be under /auth
 
+    # Import and register the home blueprint
+    from app.home import home_bp
+    app.register_blueprint(home_bp, url_prefix='/home') # All home routes will be under /home
+
     # A simple route to home page
     @app.route('/')
     def index():
-        return render_template('home.html', title='Home Page')
+        return render_template('about.html', title='About Page')
 
     # Import models here to ensure they are known to Flask-Migrate
     # and for the shell context processor in run.py
