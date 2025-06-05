@@ -11,7 +11,7 @@ def send_password_reset_email(user):
     message = Mail(
         from_email=current_app.config['DEFAULT_MAIL_SENDER'],
         to_emails=user.email,
-        subject='My Disaster Planner - Password Reset Request',
+        subject='Reset your Password - My Disaster Planner',
         html_content=render_template('auth/emailResetPassword.html', user=user, token=token)
     )
     
