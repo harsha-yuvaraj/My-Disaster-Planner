@@ -48,3 +48,26 @@ a:hover {
 footer a {
     text-decoration: none;
 }
+
+/* Style the flash message timer bar */
+.alert-timer-bar {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 4px; 
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.2); /* A semi-transparent overlay */
+  animation: timer-countdown 5s linear forwards;
+}
+
+/* Animation for the alert timer bar */
+@keyframes timer-countdown {
+  /* At the start of the animation (0%), the bar is full width */
+  from {
+    width: 100%;
+  }
+  /* At the end of the animation (100%), the bar has no width */
+  to {
+    width: 0%;
+  }
+}
