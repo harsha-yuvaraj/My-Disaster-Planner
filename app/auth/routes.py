@@ -39,7 +39,6 @@ def login():
         if not next_page or not next_page.startswith('/'):
             next_page = url_for('home.main') 
 
-        flash('You have been logged in successfully!', 'success')
         return redirect(next_page)
 
     # For a GET request, just render the login form
@@ -62,7 +61,7 @@ def forgot_password():
             # A successful SendGrid API call returns a 2xx status code (usually 202 Accepted).
             if response and 200 <= response.status_code < 300:
                 db.session.commit()
-                flash('A password reset link has been sent to your email (also check spam folder). Please wait atleast 60 seconds before requesting a new link.', 'info')
+                flash('Your password reset link is on its way! Be sure to check your inbox and spam.', 'info')
             else:
                 db.session.rollback() # IMPORTANT: Do not save the token if the email failed to send.
                 flash('Sorry, there was an error sending the password reset email. Please try again.', 'danger')

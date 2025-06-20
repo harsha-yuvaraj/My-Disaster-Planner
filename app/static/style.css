@@ -57,7 +57,7 @@ footer a {
   height: 4px; 
   width: 100%;
   background-color: rgba(0, 0, 0, 0.2); /* A semi-transparent overlay */
-  animation: timer-countdown 5s linear forwards;
+  animation: timer-countdown 10s linear forwards;
 }
 
 /* Animation for the alert timer bar */
@@ -70,4 +70,87 @@ footer a {
   to {
     width: 0%;
   }
+}
+
+/* --- Mobile First Styles (screens <= 960px) --- */
+
+.footer-column {
+    margin-bottom: 2rem; /* Add some space between the main sections on mobile */
+}
+
+.footer-collapse h5 {
+    cursor: pointer;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.footer-collapse .collapse {
+    padding-top: 1rem;
+}
+
+/* The chevron icon is visible on mobile by default */
+.chevron-icon {
+    display: inline-block;
+}
+
+/* --- Desktop Styles (screens > 960px) --- */
+
+@media (min-width: 961px) {
+    .footer-column {
+        margin-bottom: 0; /* Remove extra bottom margin on desktop columns */
+    }
+
+    /* We don't want the collapsible behavior on desktop */
+    .footer-collapse .collapse {
+        display: block; /* Make the content always visible */
+    }
+
+    .footer-collapse h5 {
+        cursor: default;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    /* Hide the chevron icon on desktop */
+    .chevron-icon {
+        display: none;
+    }
+
+    /* Place the Share section in the middle column on desktop */
+    #share-section {
+        grid-column: 2;
+        grid-row: 1;
+        align-self: end;
+        text-align: center; /* Center the icons within the middle column */
+        margin-top: 1rem;
+    }
+
+    #share-section .d-flex {
+        justify-content: center; /* Center the icons */
+    }
+
+    #share-section .mx-2:first-child {
+        margin-left: 0 !important;
+    }
+    
+    /* Place The Team section in the third column on desktop */
+    .footer-collapse:last-child { /* Target the last 'footer-collapse' div (The Team) */
+        grid-column: 3;
+        grid-row: 1;
+        text-align: left;
+    }
+    
+    /* Adjust the Resources column text to left align on desktop */
+    .footer-collapse:first-of-type { /* Target the first 'footer-collapse' div (Resources) */
+        text-align: left;
+    }
+    .footer-collapse:first-of-type .list-unstyled {
+        text-align: left;
+    }
+    .footer-collapse:first-of-type h6 {
+        text-align: left;
+    }
+    .footer-collapse:first-of-type .d-flex {
+        justify-content: flex-start;
+    }
 }
