@@ -42,7 +42,7 @@ def login():
         flash('You have been logged in successfully!', 'success')
         return redirect(next_page)
 
-    # For a GET request, just render the blank login form
+    # For a GET request, just render the login form
     return render_template('auth/login.html')
 
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])

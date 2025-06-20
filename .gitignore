@@ -138,5 +138,6 @@ cython_debug/
 *.sqlite3
 *.db
 
-# Flask secret key file
+# Flask secret files
 secret_key.txt
+.env
