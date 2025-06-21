@@ -1,7 +1,8 @@
 from app import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
+from sqlalchemy.sql import func # For database-level default timestamps
 import uuid
 
 @login_manager.user_loader
@@ -33,6 +34,9 @@ class User(UserMixin, db.Model):
     # Password Reset Fields
     reset_token = db.Column(db.String(36), nullable=True) # To store UUID as string
     reset_time_limit = db.Column(db.DateTime(), nullable=True)
+
+    # one to many relationship with Plan
+    plans = db.relationship('Plan', backref='user', cascade="all, delete-orphan", lazy=True)
 
     # Add __table_args__ to define constraints and indexes with names
     __table_args__ = (
@@ -73,4 +77,24 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f'<User {self.first_name} {self.last_name} - ({self.email})>'
 
-# Add other models below as needed
+
+class Plan(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, default="My Disaster Plan")
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    # Stores all questionnaire answers as a JSON object
+    answers_json = db.Column(db.JSON, nullable=True)
+    
+    # Stores the filename of the report stored on S3
+    report_name = db.Column(db.String(100), nullable=True)
+    
+    # Tracks if the plan is complete or pending
+    is_complete = db.Column(db.Boolean, default=False, nullable=False)
+
+    # Timezone-aware timestamps
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())
+
+    def __repr__(self):
+        return f'<Plan id={self.id} name="{self.plan_name}" status={self.status}>'

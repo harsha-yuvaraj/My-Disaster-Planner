@@ -1,11 +1,42 @@
-/* Theme 1: Serene Blue & Sage */
 :root {
-    --primary-color: hsl(210, 50%, 45%);      /* Trustworthy Blue: #3A74A8 */
+    --primary-color: #3A74A8;       /* Trustworthy Blue: #3A74A8 */
     --secondary-color: #1c65a6;   
     --dark-secondary-color: #0e65b1; 
-    --background-color: hsl(0, 0%, 98%);
+    --background-color: #F8F9FA; /* Bootstrap's "light" gray color */
+    --dark-secondary-color: #0e65b1; /* A darker shade for highlights */
+    --text-on-primary: #ffffff;
+    --light-gray-border: #dee2e6;
 }
 
+.nav-tabs {
+    /* Set the color for the bottom border of the tab container */
+    --bs-nav-tabs-border-color: var(--light-gray-border);
+    /* Remove the default active link background color and border highlight */
+    --bs-nav-tabs-link-active-bg: #fff;
+    --bs-nav-tabs-link-active-border-color: var(--light-gray-border) var(--light-gray-border) #fff;
+}
+/* Style the tab links */
+.nav-tabs .nav-link {
+    /* Style for inactive tabs */
+    font-weight: 500;
+    color: var(--primary-color);
+}
+/* Style the ACTIVE tab with a color fill and border highlight */
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+    color: var(--dark-secondary-color);
+    font-weight: 600;
+    /* This creates the thick highlight border on top */
+    border-top: 3px solid var(--dark-secondary-color);
+}
+/* Style the tab content pane to feel connected */
+.tab-content {
+    /* Add a border that matches the tabs, but remove the top border */
+    border: 1px solid var(--light-gray-border);
+    border-top: 0;
+    border-radius: 0 0 0.375rem 0.375rem; /* Rounded bottom corners */
+}
+    
 body {
     background-color: var(--background-color);
     font-family: "Arial", verdana;;
