@@ -36,6 +36,19 @@
     border-top: 0;
     border-radius: 0 0 0.375rem 0.375rem; /* Rounded bottom corners */
 }
+
+/* --- Interactive Plan List Hover Effect --- */
+
+/* a smooth transition on the list item */
+.list-group-item {
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* define the hover state. */
+.list-group-item:hover {
+    background-color: rgba(58, 116, 168, 0.1); /* Light tint of your #3A74A8 blue */
+    cursor: pointer; /* Changes the mouse to a pointer to show it's interactive */
+}
     
 body {
     background-color: var(--background-color);
@@ -122,6 +135,93 @@ footer a {
 /* The chevron icon is visible on mobile by default */
 .chevron-icon {
     display: inline-block;
+}
+
+
+/* --- Custom Branded Buttons --- */
+
+/* The Primary, Solid Button */
+.btn-brand-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-on-primary);
+}
+
+.btn-brand-primary:hover {
+    background-color: var(--secondary-color); /* Use your secondary blue for hover */
+    border-color: var(--secondary-color);
+    color: var(--text-on-primary);
+}
+
+/* The Secondary, Outline Button */
+.btn-brand-outline {
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-brand-outline:hover {
+    background-color: var(--primary-color); /* Fills with color on hover */
+    border-color: var(--primary-color);
+    color: var(--text-on-primary); /* Text becomes white on hover */
+}
+
+/* --- Responsive Button --- */
+
+/* Mobile Size (Default) */
+.btn-responsive {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem; /* Equivalent to .btn-sm */
+}
+
+/* Tablet Size (760px and wider) */
+@media (min-width: 760px) {
+    .btn-responsive {
+        padding: 0.375rem 1.25rem;
+        font-size: 1rem; /* Equivalent to default .btn */
+    }
+
+    
+}
+
+/* Laptop Size (992px and wider) */
+@media (min-width: 961px) {
+    .btn-responsive {
+        padding: 0.5rem 1.5rem;
+        font-size: 1.25rem; /* Equivalent to .btn-lg */
+    }
+}
+
+/* --- Responsive Welcome Text --- */
+
+/* Default Mobile Size (< 760px) */
+.display-5 {
+    font-size: 1.6rem; /* A compact, readable mobile heading */
+}
+.lead {
+    font-size: 0.9rem; /* Standard paragraph size for mobile */
+    font-weight: 400;
+}
+
+/* Tablet Size (760px and wider) */
+@media (min-width: 760px) {
+    .display-5 {
+        font-size: 2.5rem;
+    }
+    .lead {
+        font-size: 1.15rem; /* Slightly larger for tablets */
+        font-weight: 300; /* Lighter weight for the lead paragraph */
+    }
+}
+
+/* Laptop Size (961px and wider) */
+@media (min-width: 961px) {
+    .display-5 {
+        font-size: 3rem; /* Full, impressive size for desktops */
+    }
+    .lead {
+        font-size: 1.25rem; /* Full lead paragraph size */
+    }
 }
 
 /* --- Desktop Styles (screens > 960px) --- */

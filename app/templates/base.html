@@ -26,12 +26,12 @@
             </button>
             <div class="collapse navbar-collapse sticky-top" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_anonymous %}
                     <li class="nav-item">
                         <a class="nav-link {{ 'active' if request.endpoint == 'index' else '' }}" aria-current="page" href="{{ url_for('index') }}">
                             <i class="bi bi-info-circle-fill"></i> About
                         </a>
                     </li>
-                    {% if current_user.is_anonymous %}
                     <li class="nav-item">
                         <a class="nav-link {{ 'active' if request.endpoint == 'auth.login' else '' }}" href="{{ url_for('auth.login') }}">
                             <i class="bi bi-box-arrow-in-right"></i> Login

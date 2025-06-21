@@ -19,7 +19,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(150), index=True, unique=True, nullable=False)
     gender = db.Column(db.String(8), nullable=False) 
     phone_number = db.Column(db.String(10), nullable=True) 
-    date_of_birth = db.Column(db.Date, nullable=False) 
+    age = db.Column(db.Integer, nullable=False)
 
     # Address Information
     street_address = db.Column(db.String(128), nullable=False)

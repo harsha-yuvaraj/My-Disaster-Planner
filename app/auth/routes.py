@@ -55,10 +55,10 @@ def forgot_password():
         if user:
             # The send_password_reset_email function now generates the token and attempts to send.
             # We will only commit the token to the database if the send is successful.
-            response = send_password_reset_email(user)
+            response_code = send_password_reset_email(user)
             
-            # A successful SendGrid API call returns a 2xx status code (usually 202 Accepted).
-            if response and 200 <= response.status_code < 300:
+            # A successful Mailjet API call returns a 2xx status code (usually 200 Accepted).
+            if response_code and 200 <= response_code < 300:
                 db.session.commit()
                 flash('Your password reset link is on its way! Be sure to check your inbox and spam.', 'info')
             else:
@@ -66,7 +66,7 @@ def forgot_password():
                 flash('Sorry, there was an error sending the password reset email. Please try again.', 'danger')
         else:
             # For security, show the same success message whether the user exists or not.
-            flash('A password reset link has been sent to your email.', 'info')
+            flash('Your password reset link is on its way! Be sure to check your inbox and spam.', 'info')
 
         return redirect(url_for('auth.login'))
 
@@ -116,7 +116,6 @@ def reset_password(token):
 @auth_bp.route('/logout')
 def logout():
     logout_user()
-    flash('You have been logged out.', 'info')
     return redirect(url_for('index'))
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -132,7 +131,7 @@ def register():
         last_name = form_data.get('last_name')
         email = form_data.get('email')
         gender = form_data.get('gender')
-        dob = form_data.get('dob') 
+        age = form_data.get('age') 
         street_address = form_data.get('street_address')
         city = form_data.get('city')
         state = form_data.get('state')
@@ -146,7 +145,7 @@ def register():
         # Check required fields
         required_fields = {
             'First Name': first_name, 'Last Name': last_name, 'Email': email,
-            'Gender': gender, 'Date of Birth (age verification purpose)': dob, 'Street Address': street_address, 'City': city,
+            'Gender': gender, 'Age': age, 'Street Address': street_address, 'City': city,
             'State': state, 'Zip Code': zip_code, 'Password': password
         }
         for field_name, value in required_fields.items():
@@ -166,6 +165,13 @@ def register():
         # Check email uniqueness
         if email and User.query.filter_by(email=email).first():
             flash('That email address is already in use. Please choose a different one.', 'warning')
+            errors = True
+
+        # Check age
+        if age and age.isdigit() and 0 < int(age) < 120:
+            age = int(age)
+        else:
+            flash('Please enter a valid age.', 'danger')
             errors = True
 
         # Check zip code and phone number formats using regular expressions
@@ -189,7 +195,7 @@ def register():
                 last_name=last_name,
                 email=email,
                 gender=gender,
-                date_of_birth=datetime.strptime(dob, '%Y-%m-%d').date(),
+                age=age,
                 street_address=street_address,
                 city=city,
                 state=state,

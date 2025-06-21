@@ -44,10 +44,10 @@
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input type="date" class="form-control" id="dob" name="dob" 
-                               placeholder="Date of Birth" value="{{ request.form.dob or '' }}"
-                               max="{{ max_date }}" required>
-                        <label for="dob">Date of Birth (age verification purpose) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control form-control-lg" id="age" name="age" 
+                               placeholder="Age" value="{{ request.form.age or '' }}" 
+                               min="1" max="120" required>
+                        <label for="age">Age <span class="text-danger">*</span></label>
                     </div>
 
                     <div class="form-floating mb-3 ">
