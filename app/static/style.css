@@ -285,3 +285,155 @@ footer a {
         justify-content: flex-start;
     }
 }
+
+/* --- Progress Bar Component Styles (Corrected) --- */
+.progress-container {
+    width: 100%;
+    max-width: 800px; /* Or your preferred max width */
+    margin: 0 auto;   /* This is the key change that centers the container */
+    padding-top: 1.2rem;
+    box-sizing: border-box;
+}
+
+.progress-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-direction: row;
+    position: relative;
+    list-style: none;
+    padding: 0; /* Add this back for safety */
+    margin: 0;
+}
+
+/* 
+  The connecting lines are now pseudo-elements on each step.
+  This ensures a line is only drawn *between* steps.
+*/
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    text-align: center;
+    flex: 1; /* Allows steps to space out evenly */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/* The grey line segment drawn BEFORE each step */
+.step::before {
+    content: '';
+    position: absolute;
+    top: 36px; /* Aligns with the middle of the 40px circle */
+    right: 50%;
+    width: 100%;
+    height: 4px;
+    background-color: #e9ecef;
+    z-index: -1; /* Places the line behind the circle */
+}
+
+/* Do NOT draw a line before the very first step */
+.progress-bar > .step:first-child::before {
+    display: none;
+}
+
+/* Color the line green for steps that are completed or active */
+.step.completed::before,
+.step.active::before {
+    background-color: #28a745;
+}
+
+
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #adb5bd; /* Softer gray for inactive steps */
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    transition: all 0.4s ease;
+    box-sizing: border-box;
+    z-index: 2; /* Ensure circle is on top of its own line */
+}
+
+.step-label {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6c757d;
+    transition: all 0.4s ease;
+}
+
+.step.completed .step-circle,
+.step.active .step-circle {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.step.completed .step-label {
+    color: #212529;
+}
+
+.step.active .step-circle {
+    position: relative;
+}
+.step.active .step-label {
+    color: #28a745;
+    font-weight: bold;
+}
+
+/* --- Radiating Animation --- */
+.step.active .step-circle::after,
+.step.active .step-circle::before { /* Note: We reuse ::before for one wave */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.step.active .step-circle::before {
+    border: 2px solid #28a745;
+    animation: radiate-small 2s infinite;
+    animation-delay: 0.5s;
+    background-color: transparent !important; /* Ensure no conflict with line color */
+}
+
+.step.active .step-circle::after {
+    border: 2px solid #28a745;
+    animation: radiate-big 2s infinite;
+}
+
+@keyframes radiate-big {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes radiate-small {
+    0% { transform: scale(1); opacity: 0.7; }
+    100% { transform: scale(1.3); opacity: 0; }
+}
+
+/* --- Responsive Styles for Mobile --- */
+@media (max-width: 720px) {
+    .step-circle {
+        width: 30px;
+        height: 30px;
+        font-size: 0.875rem;
+    }
+
+    .step::before {
+        top: 31px; /* Re-center line for 30px circles */
+    }
+    
+    .step-label {
+        display: none;
+    }
+}

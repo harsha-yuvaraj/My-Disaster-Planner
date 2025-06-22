@@ -1,0 +1,22 @@
+<div class="progress-container">    
+    <ul class="progress-bar">
+        {# 
+          This loop dynamically generates the steps.
+          'loop.index' is a special Jinja2 variable that gives the current iteration number (starting from 1).
+        #}
+        {% for step_label in steps %}
+
+            {% set step_class = '' %}
+            {% if loop.index == current_step %}
+                {% set step_class = 'active' %}
+            {% elif loop.index < current_step %}
+                {% set step_class = 'completed' %}
+            {% endif %}
+
+            <li class="step {{ step_class }}">
+                <div class="step-circle">{{ loop.index }}</div>
+                <div class="step-label">{{ step_label }}</div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

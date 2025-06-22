@@ -4,19 +4,17 @@
 <div class="container py-1">
 
     <div class="text-center">
-        <h1 class="display-5">Welcome, {{ current_user.first_name }}!</h1>
+        <h1 class="display-5 logo-color">Welcome, {{ current_user.first_name }}!</h1>
 
         <p class="lead text-muted">
-            Facing emergencies or natural disasters can feel overwhelming, but you're taking a crucial step to protect the people you care for, and we're here to guide you.
+            In the event of a natural disaster, being prepared matters — and we’re here to guide you.
         </p>
     </div>
-
-    <hr class="my-4">
 
     <div class="text-center mb-5">
         <div class="d-inline-flex flex-column flex-sm-row gap-3 justify-content-center">
 
-            <a href="#" class="btn btn-brand-primary btn-responsive rounded-pill">
+            <a href="{{ url_for('home.start_new_plan') }}" class="btn btn-brand-primary btn-responsive rounded-pill">
                 <i class="bi bi-plus-lg me-2"></i>Start a New Plan
             </a>
 

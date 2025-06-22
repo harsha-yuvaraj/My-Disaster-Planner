@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            {% include 'home/plan/progress_bar.html' %}
+            
+            <div class="card shadow mt-4">
+                <div class="card-body p-4 p-md-5">
+                    {% block plan_content %} {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+    {# This block is intentionally left empty to hide the footer on this page #}
+{% endblock footer %}

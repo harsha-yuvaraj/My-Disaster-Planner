@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            
+            <!-- Welcome Message -->
+            <h1 class="display-5 logo-color">Your Disaster Planner</h1>
+            <p class="lead text-muted mt-3">
+                Taking steps to prepare shows how much you care. We know planning for an emergency can be difficult, but we'll guide you through it a little at a time.
+            </p>
+             
+            <br />
+            
+            <!-- Form to Name the Plan -->
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h5 class="card-title">Let's begin by naming your plan.</h5>                    
+                    <form method="POST" action="{{ url_for('home.start_new_plan') }}" class="mt-3">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                        
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="plan_name" name="plan_name" placeholder="Plan name" required>
+                            <label for="plan_name">Plan Name</label>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-brand-primary btn-responsive rounded-pill">
+                                Start Planning <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Reassurance Message -->
+            <p class="mt-4 text-muted">
+                <strong>You don't have to finish it all at once. Your progress will be saved.</strong>
+            </p>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+    {# This block is intentionally left empty to hide the footer on this page #}
+{% endblock footer %}
