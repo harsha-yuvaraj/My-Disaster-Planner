@@ -4,6 +4,7 @@
     --dark-secondary-color: #0e65b1; 
     --background-color: #F8F9FA; /* Bootstrap's "light" gray color */
     --dark-secondary-color: #0e65b1; /* A darker shade for highlights */
+    --danger-red-color: #A92E37;      /* A deep, dark red for danger states */
     --text-on-primary: #ffffff;
     --light-gray-border: #dee2e6;
 }
@@ -164,6 +165,23 @@ footer a {
     background-color: var(--primary-color); /* Fills with color on hover */
     border-color: var(--primary-color);
     color: var(--text-on-primary); /* Text becomes white on hover */
+}
+
+/* 
+  A custom outline button style for "danger" actions, using the dark red color.
+*/
+.btn-outline-danger {
+  background-color: transparent;
+  border-color: var(--danger-red-color);
+  color: var(--danger-red-color);
+  transition: all 0.2s ease-in-out; /* Smooth transition for hover effects */
+}
+
+/* Hover state for the danger outline button */
+.btn-outline-danger:hover {
+  background-color: var(--danger-red-color); /* Fills with the dark red on hover */
+  border-color: var(--danger-red-color);
+  color: var(--text-on-primary);           /* Text becomes white on hover */
 }
 
 /* --- Responsive Button --- */

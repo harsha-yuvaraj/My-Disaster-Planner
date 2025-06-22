@@ -131,7 +131,7 @@ def register():
         last_name = form_data.get('last_name')
         email = form_data.get('email')
         gender = form_data.get('gender')
-        age = form_data.get('age') 
+        dob = form_data.get('dob') 
         street_address = form_data.get('street_address')
         city = form_data.get('city')
         state = form_data.get('state')
@@ -145,7 +145,7 @@ def register():
         # Check required fields
         required_fields = {
             'First Name': first_name, 'Last Name': last_name, 'Email': email,
-            'Gender': gender, 'Age': age, 'Street Address': street_address, 'City': city,
+            'Gender': gender, 'Date of Birth (for age calculation only)': dob, 'Street Address': street_address, 'City': city,
             'State': state, 'Zip Code': zip_code, 'Password': password
         }
         for field_name, value in required_fields.items():
@@ -165,13 +165,6 @@ def register():
         # Check email uniqueness
         if email and User.query.filter_by(email=email).first():
             flash('That email address is already in use. Please choose a different one.', 'warning')
-            errors = True
-
-        # Check age
-        if age and age.isdigit() and 0 < int(age) < 120:
-            age = int(age)
-        else:
-            flash('Please enter a valid age.', 'danger')
             errors = True
 
         # Check zip code and phone number formats using regular expressions
@@ -195,7 +188,7 @@ def register():
                 last_name=last_name,
                 email=email,
                 gender=gender,
-                age=age,
+                date_of_birth=datetime.strptime(dob, '%Y-%m-%d').date(),
                 street_address=street_address,
                 city=city,
                 state=state,

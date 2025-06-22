@@ -1,7 +1,7 @@
 from app import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, date, timedelta
 from sqlalchemy.sql import func # For database-level default timestamps
 import uuid
 
@@ -19,7 +19,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(150), index=True, unique=True, nullable=False)
     gender = db.Column(db.String(8), nullable=False) 
     phone_number = db.Column(db.String(10), nullable=True) 
-    age = db.Column(db.Integer, nullable=False)
+    date_of_birth = db.Column(db.Date, nullable=False)
 
     # Address Information
     street_address = db.Column(db.String(128), nullable=False)
@@ -73,6 +73,15 @@ class User(UserMixin, db.Model):
                 db.session.commit()
             
         return None # Token is invalid or expired
+    
+    @property
+    def age(self):
+        """Calculates the user's current age from their date of birth."""
+        if not self.date_of_birth:
+            return None
+        today = date.today()
+        # This calculates the years difference, then subtracts 1 if the birthday hasn't occurred yet this year.
+        return today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
 
     def __repr__(self):
         return f'<User {self.first_name} {self.last_name} - ({self.email})>'
@@ -92,6 +101,9 @@ class Plan(db.Model):
     # Tracks if the plan is complete or pending
     is_complete = db.Column(db.Boolean, default=False, nullable=False)
 
+    # Boolean to indicate if the plan is for the user creating it.
+    is_for_self = db.Column(db.Boolean, default=True, nullable=False)
+    
     # Timezone-aware timestamps
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())

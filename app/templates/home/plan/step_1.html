@@ -1,9 +1,405 @@
 {% extends "home/plan/plan_layout.html" %}
 
-{% block plan_content %} 
-    <div class="container">
-        <!-- The rest of your form for Step 1 goes here -->
-        <h1>{{plan.name}}</h1>
+{% block styles %}
+{# Add the Tom Select library's stylesheet #}
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+{% endblock %}
 
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/step_1.js') }}"></script>
+{# Add the Tom Select library's JavaScript #}
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+{% endblock %}
+
+{% block plan_content %}
+<h5 class="text-muted pb-3">
+    {% if plan.is_for_self %}
+    <b>First, tell us more about yourself and your support system.</b>
+    {% else %}
+    <b>First, tell us about the person involved in this plan and their support system.</b>
+    {% endif %}
+</h5>
+
+<form method="POST" action="{{ url_for('home.plan_step', plan_id=plan.id, step_num=current_step) }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+
+    <!-- ====================================================== -->
+    <!-- Section A: The People                                  -->
+    <!-- ====================================================== -->
+
+    {# Conditionally show the care recipient section ONLY if the plan is for someone else #}
+    {% if not plan.is_for_self %}
+    <div id="careRecipientSection" class="mb-4 p-3 border rounded bg-light">
+        <h6>
+            <i class="bi bi-person-fill me-2"></i> 
+            <strong>About the person you care for:</strong>
+        </h6>
+
+        <!-- Row 1: Name and Age -->
+        <div class="row">
+            <div class="col-12 col-md-8">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="care_recipient_name" name="care_recipient_name"
+                        placeholder="Name"
+                        value="{{ plan.answers_json.get('step_1', {}).get('care_recipient_name', '') }}" required>
+                    <label for="care_recipient_name">Name</label>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="care_recipient_age" name="care_recipient_age"
+                        placeholder="Age"
+                        value="{{ plan.answers_json.get('step_1', {}).get('care_recipient_age', '') }}" required>
+                    <label for="care_recipient_age">Age</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: Gender, Email, and Phone -->
+        <!-- CHANGE: Added col-12 to ensure stacking on mobile, fixing the overflow -->
+        <div class="row">
+            <div class="col-12 col-md-3">
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="care_recipient_gender" name="care_recipient_gender" required>
+                        <option value="" disabled {{ 'selected' if not plan.answers_json.get('step_1',
+                            {}).get('care_recipient_gender') }}>Select Gender...</option>
+                        <option value="male" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_gender')=='male' }}>Male</option>
+                        <option value="female" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_gender')=='female' }}>Female</option>
+                        <option value="other" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_gender')=='other' }}>Other</option>
+                    </select>
+                    <label for="care_recipient_gender">Gender</label>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="care_recipient_email" name="care_recipient_email"
+                        placeholder="Email"
+                        value="{{ plan.answers_json.get('step_1', {}).get('care_recipient_email', '') }}" required>
+                    <label for="care_recipient_email">Email</label>
+                </div>
+            </div>
+            <div class="col-12 col-md-5">
+                <div class="form-floating mb-3">
+                    <input type="tel" class="form-control" id="care_recipient_phone" name="care_recipient_phone"
+                        placeholder="Phone Number (Optional)" pattern="[0-9]{10}" maxlength="10" inputmode="numeric"
+                        title="Please enter a 10-digit phone number." value="{{ plan.answers_json.get('step_1', {}).get('care_recipient_phone', '') }}">
+                    <label for="care_recipient_phone">Phone Number (Optional)</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row for Street Address -->
+        <div class="row">
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="care_recipient_address" name="care_recipient_address"
+                        placeholder="Street Address"
+                        value="{{ plan.answers_json.get('step_1', {}).get('care_recipient_address', '') }}" required>
+                    <label for="care_recipient_address">Street Address</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 3: City, State, and Zip Code -->
+        <!-- CHANGE: Added col-12 to ensure stacking on mobile -->
+        <div class="row">
+            <div class="col-12 col-md-5">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="care_recipient_city" name="care_recipient_city"
+                        placeholder="City"
+                        value="{{ plan.answers_json.get('step_1', {}).get('care_recipient_city', '') }}" required>
+                    <label for="care_recipient_city">City</label>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="care_recipient_state" name="care_recipient_state" required>
+                        <option value="" disabled {{ 'selected' if not plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state') }}>Select State...</option>
+                        <option value="AL" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='AL' }}>Alabama</option>
+                        <option value="AK" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='AK' }}>Alaska</option>
+                        <option value="AZ" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='AZ' }}>Arizona</option>
+                        <option value="AR" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='AR' }}>Arkansas</option>
+                        <option value="CA" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='CA' }}>California</option>
+                        <option value="CO" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='CO' }}>Colorado</option>
+                        <option value="CT" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='CT' }}>Connecticut</option>
+                        <option value="DE" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='DE' }}>Delaware</option>
+                        <option value="DC" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='DC' }}>District Of Columbia</option>
+                        <option value="FL" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='FL' }}>Florida</option>
+                        <option value="GA" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='GA' }}>Georgia</option>
+                        <option value="HI" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='HI' }}>Hawaii</option>
+                        <option value="ID" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='ID' }}>Idaho</option>
+                        <option value="IL" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='IL' }}>Illinois</option>
+                        <option value="IN" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='IN' }}>Indiana</option>
+                        <option value="IA" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='IA' }}>Iowa</option>
+                        <option value="KS" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='KS' }}>Kansas</option>
+                        <option value="KY" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='KY' }}>Kentucky</option>
+                        <option value="LA" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='LA' }}>Louisiana</option>
+                        <option value="ME" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='ME' }}>Maine</option>
+                        <option value="MD" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='MD' }}>Maryland</option>
+                        <option value="MA" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='MA' }}>Massachusetts</option>
+                        <option value="MI" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='MI' }}>Michigan</option>
+                        <option value="MN" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='MN' }}>Minnesota</option>
+                        <option value="MS" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='MS' }}>Mississippi</option>
+                        <option value="MO" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='MO' }}>Missouri</option>
+                        <option value="MT" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='MT' }}>Montana</option>
+                        <option value="NE" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='NE' }}>Nebraska</option>
+                        <option value="NV" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='NV' }}>Nevada</option>
+                        <option value="NH" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='NH' }}>New Hampshire</option>
+                        <option value="NJ" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='NJ' }}>New Jersey</option>
+                        <option value="NM" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='NM' }}>New Mexico</option>
+                        <option value="NY" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='NY' }}>New York</option>
+                        <option value="NC" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='NC' }}>North Carolina</option>
+                        <option value="ND" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='ND' }}>North Dakota</option>
+                        <option value="OH" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='OH' }}>Ohio</option>
+                        <option value="OK" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='OK' }}>Oklahoma</option>
+                        <option value="OR" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='OR' }}>Oregon</option>
+                        <option value="PA" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='PA' }}>Pennsylvania</option>
+                        <option value="RI" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='RI' }}>Rhode Island</option>
+                        <option value="SC" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='SC' }}>South Carolina</option>
+                        <option value="SD" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='SD' }}>South Dakota</option>
+                        <option value="TN" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='TN' }}>Tennessee</option>
+                        <option value="TX" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='TX' }}>Texas</option>
+                        <option value="UT" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='UT' }}>Utah</option>
+                        <option value="VT" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='VT' }}>Vermont</option>
+                        <option value="VA" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='VA' }}>Virginia</option>
+                        <option value="WA" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='WA' }}>Washington</option>
+                        <option value="WV" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='WV' }}>West Virginia</option>
+                        <option value="WI" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='WI' }}>Wisconsin</option>
+                        <option value="WY" {{ 'selected' if plan.answers_json.get('step_1',
+                            {}).get('care_recipient_state')=='WY' }}>Wyoming</option>
+                    </select>
+                    <label for="care_recipient_state">State</label>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="care_recipient_zip" name="care_recipient_zip"
+                        placeholder="Zip Code"
+                        value="{{ plan.answers_json.get('step_1', {}).get('care_recipient_zip', '') }}" required
+                        pattern="[0-9]{5}" maxlength="5" title="Enter a 5-digit zip code.">
+                    <label for="care_recipient_zip">Zip Code</label>
+                </div>
+            </div>
+        </div>
     </div>
+
+
+    {% endif %}
+
+    <div class="mt-4 form-section-header">
+        <h4>
+            <i class="bi bi-heart-pulse-fill me-2"></i>
+            <b>
+                {% if plan.is_for_self %}
+                Your Health Conditions & Needs
+                {% else %}
+                Health Conditions & Needs of the person you care for:
+                {% endif %}
+            </b>
+        </h4>
+        <div class="mb-3">
+            <label for="health_conditions_list" class="form-label">
+                Select all applicable conditions:
+            </label>
+            <select multiple class="form-select" id="health-conditions-select" name="health_conditions_list" size="10">
+                <option value="Anxiety" {{ 'selected' if 'Anxiety' in plan.answers_json.get('step_1',
+                    {}).get('health_conditions_list', []) }}>Anxiety</option>
+                <option value="Arthritis" {{ 'selected' if 'Arthritis' in plan.answers_json.get('step_1',
+                    {}).get('health_conditions_list', []) }}>Arthritis</option>
+                <option value="Chronic Pain" {{ 'selected' if 'Chronic Pain' in
+                    plan.answers_json.get('step_1', {}).get('health_conditions_list', []) }}>Chronic Pain</option>
+                <option value="Dementia or Memory Problems" {{ 'selected' if 'Dementia or Memory Problems' in
+                    plan.answers_json.get('step_1', {}).get('health_conditions_list', []) }}>Dementia or Memory Problems
+                </option>
+                <option value="Depression" {{ 'selected' if 'Depression' in
+                    plan.answers_json.get('step_1', {}).get('health_conditions_list', []) }}>Depression</option>
+                <option value="Diabetes" {{ 'selected' if 'Diabetes' in plan.answers_json.get('step_1',
+                    {}).get('health_conditions_list', []) }}>Diabetes</option>
+                <option value="Mobility Issues" {{ 'selected' if 'Mobility Issues' in
+                    plan.answers_json.get('step_1', {}).get('health_conditions_list', []) }}>Difficulty Walking /
+                    Mobility Issues</option>
+                <option value="Hearing Impairment" {{ 'selected' if 'Hearing Impairment' in
+                    plan.answers_json.get('step_1', {}).get('health_conditions_list', []) }}>Hearing Impairment</option>
+                <option value="Heart Disease" {{ 'selected' if 'Heart Disease' in
+                    plan.answers_json.get('step_1', {}).get('health_conditions_list', []) }}>Heart Disease</option>
+                <option value="High Blood Pressure" {{ 'selected' if 'High Blood Pressure' in
+                    plan.answers_json.get('step_1', {}).get('health_conditions_list', []) }}>High Blood Pressure
+                    (Hypertension)</option>
+                <option value="Kidney Disease" {{ 'selected' if 'Kidney Disease' in
+                    plan.answers_json.get('step_1', {}).get('health_conditions_list', []) }}>Kidney Disease</option>
+                <option value="Respiratory Issues" {{ 'selected' if 'Respiratory Issues' in
+                    plan.answers_json.get('step_1', {}).get('health_conditions_list', []) }}>Respiratory Issues (e.g.,
+                    Asthma, COPD)</option>
+                <option value="Stroke" {{ 'selected' if 'Stroke' in plan.answers_json.get('step_1',
+                    {}).get('health_conditions_list', []) }}>Stroke</option>
+                <option value="Vision Impairment" {{ 'selected' if 'Vision Impairment' in
+                    plan.answers_json.get('step_1', {}).get('health_conditions_list', []) }}>Vision Impairment</option>
+            </select>
+        </div>
+
+        <!-- New: Textbox for "Other" details, hidden by default -->
+        <div id="other-conditions-wrapper" class="mb-3">
+            <label for="other-conditions-textbox" class="form-label">
+                Please specify other conditions & special needs (if any):
+            </label>
+            <textarea class="form-control" id="other-conditions-textbox" name="health_other_details" rows="3"
+                maxlength="400"
+                placeholder="Enter details here...">{{ plan.answers_json.get('step_1', {}).get('health_other_details', '') }}</textarea>
+        </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- Section B: Living Situation                          -->
+    <!-- ====================================================== -->
+    <h4 class="mt-5 form-section-header">
+        <i class="bi bi-house-door-fill me-2"></i> <b>Living Situation </b>
+    </h4>
+    <div class="mb-3">
+        <label for="home_type" class="form-label">
+
+            {% if plan.is_for_self %}
+            What type of home do you live in?
+            {% else %}
+            What type of home does the person you care for live in?
+            {% endif %}
+
+        </label>
+        <select class="form-select" id="home_type" name="home_type" required>
+            <option value="" disabled selected>Select a home type...</option>
+            <option value="Single-Family Home" {{ 'selected' if plan.answers_json.get('step_1',
+                {}).get('home_type')=='Single-Family Home' }}>Single-Family Home</option>
+            <option value="Apartment or Condo" {{ 'selected' if plan.answers_json.get('step_1',
+                {}).get('home_type')=='Apartment or Condo' }}>Apartment or Condo</option>
+            <option value="Mobile or Manufactured Home" {{ 'selected' if plan.answers_json.get('step_1',
+                {}).get('home_type')=='Mobile or Manufactured Home' }}>Mobile or Manufactured Home</option>
+        </select>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- Section C: Support Circle                       -->
+    <!-- ====================================================== -->
+    <h4 class="mt-5 form-section-header">
+        <i class="bi bi-shield-check me-2"></i>
+        <b> {% if plan.is_for_self %}Your{% endif %} Support Circle {% if not plan.is_for_self %} of the person you care
+            for: {% endif %}</b>
+    </h4>
+    <p class="text-muted">
+        {% if plan.is_for_self %}
+        List family, friends, or neighbors who can be part of your plan.
+        {% else %}
+        List family, friends, or neighbors who can be part of the plan.
+        {% endif %}
+        Consider adding at least one contact who lives outside the disaster area.
+    </p>
+
+    <div id="supportContactsContainer"
+        data-existing-contacts='{{ plan.answers_json.get("step_1", {}).get("contacts", [])|tojson }}'>
+        <!-- Contact rows will be added here by JavaScript -->
+    </div>
+
+    <button type="button" id="addContactBtn" class="btn btn-outline-secondary btn-sm mt-2">
+        <i class="bi bi-plus-lg"></i> Add Another Contact
+    </button>
+
+    <div id="contactLimitMessage" class="text-danger small mt-1 d-none">
+        You can add a maximum of 4 contacts.
+    </div>
+
+    {% include 'home/plan/controls.html' %}
+</form>
+
+<!-- Template for a single contact row -->
+<template id="contact-template">
+    <!-- 
+          CHANGE: Switched from col-sm-* to col-md-* and adjusted column widths for better layout on medium screens and up.
+          - On screens smaller than 768px (md), each field will now stack vertically, taking up the full width, which prevents overflow.
+          - On screens 768px and wider, they will appear side-by-side.
+          - I've also adjusted the remove button's column to col-md-1 to give more space to the inputs.
+        -->
+    <div class="row g-3 mb-2 align-items-center contact-row">
+        <div class="col-md-4">
+            <div class="form-floating">
+                <input type="text" class="form-control contact-name" placeholder="Contact Name">
+                <label> <i class="bi bi-person me-2"></i> Contact Name</label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-floating">
+                <input type="tel" 
+                        class="form-control contact-phone" 
+                        placeholder="Phone Number"                                       
+                        pattern="[0-9]{10}" 
+                        maxlength="10"
+                        inputmode="numeric"
+                        title="Please enter a 10-digit phone number.">
+                <label> <i class="bi bi-telephone me-2"></i> Phone</label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-floating">
+                <input type="text" class="form-control contact-relationship" placeholder="Relationship">
+                <label> <i class="bi bi-people me-2"></i> Relationship</label>
+            </div>
+        </div>
+        <div class="col-md-1 text-center">
+            <button type="button" class="btn btn-outline-danger btn-sm remove-contact-btn" title="Remove this contact">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </div>
+</template>
 {% endblock %}
