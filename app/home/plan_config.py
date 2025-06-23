@@ -1,7 +1,7 @@
 # Define the labels for all steps
 all_steps = [
     "Information", 
-    "Supplies", 
+    "Risk Assessment", 
     "Contacts", 
     "Evacuation", 
     "Communicate", 

@@ -42,6 +42,8 @@ def plan_step(plan_id, step_num):
     """Handles every step of the current questionnaire dynamically."""
     plan = Plan.query.filter_by(id=plan_id, user_id=current_user.id).first_or_404()
 
+    risk_data = {} if step_num==2 else None
+
     if request.method == 'POST':
         # Get the existing answers, ensuring it's a dictionary
         answers = plan.answers_json or {} 
@@ -60,7 +62,7 @@ def plan_step(plan_id, step_num):
         answers[step_key] = parse_plan_response(form_data, step_num)
         plan.answers_json = answers
         flag_modified(plan, 'answers_json') # Important for JSON mutation
-        
+
         # Save the plan to the database
         db.session.commit()
         
@@ -82,6 +84,6 @@ def plan_step(plan_id, step_num):
                 return redirect(url_for('home.plan_step', plan_id=plan.id, step_num=next_step))
 
     # For a GET request, render the correct step's template
-    return render_template(f'home/plan/step_{step_num}.html', plan=plan, current_step=step_num, steps=all_steps)
+    return render_template(f'home/plan/step_{step_num}.html', plan=plan, current_step=step_num, steps=all_steps, risk_data=risk_data)
 
         

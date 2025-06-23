@@ -324,8 +324,10 @@
                 {}).get('home_type')=='Single-Family Home' }}>Single-Family Home</option>
             <option value="Apartment or Condo" {{ 'selected' if plan.answers_json.get('step_1',
                 {}).get('home_type')=='Apartment or Condo' }}>Apartment or Condo</option>
-            <option value="Mobile or Manufactured Home" {{ 'selected' if plan.answers_json.get('step_1',
-                {}).get('home_type')=='Mobile or Manufactured Home' }}>Mobile or Manufactured Home</option>
+            <option value="RV or Mobile or Manufactured Home" {{ 'selected' if plan.answers_json.get('step_1',
+                {}).get('home_type')=='Mobile or Manufactured Home' }}>RV or Mobile or Manufactured Home</option>
+            <option value="Assisted Living or Care Facility" {{ 'selected' if plan.answers_json.get('step_1', 
+                {}).get('home_type') == 'Assisted Living or Care Facility' }}>Assisted Living or Care Facility</option>
         </select>
     </div>
 
