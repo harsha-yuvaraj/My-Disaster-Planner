@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_seasurf import SeaSurf
 from flask_migrate import Migrate
 from flask_login import LoginManager
+import json
 from config import Config
 
 db = SQLAlchemy()
@@ -21,6 +22,13 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     csrf.init_app(app)  
     login_manager.init_app(app)
+
+    try:
+        with open(app.config['FLORIDA_CEMW_JSON_PATH']) as f:
+            app.config['FLORIDA_CEMW'] = json.load(f)
+    except FileNotFoundError:
+        print(f"FLORIDA_CEMW.json data file not found at: {app.config['FLORIDA_CEMW_JSON_PATH']}")
+        app.config['FLORIDA_CEMW'] = {} # Default to an empty dict or handle as needed
 
     # Import and register the auth blueprint
     from app.auth import auth_bp

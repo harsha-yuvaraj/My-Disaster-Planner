@@ -1,0 +1,58 @@
+/* step_3.css */
+
+/* Style for the vertical button group used for destination selection */
+.btn-group-vertical .btn {
+    text-align: left;
+    border-radius: 0; /* Makes them stack neatly */
+    border-bottom-width: 0;
+}
+
+.btn-group-vertical .btn:first-child {
+    border-top-left-radius: var(--bs-border-radius);
+    border-top-right-radius: var(--bs-border-radius);
+}
+
+.btn-group-vertical .btn:last-child {
+    border-bottom-left-radius: var(--bs-border-radius);
+    border-bottom-right-radius: var(--bs-border-radius);
+    border-bottom-width: 1px;
+}
+
+/* Add a visual indicator for the selected radio button label */
+.btn-check:checked+.btn-outline-secondary {
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+    color: #fff;
+    box-shadow: none;
+}
+
+/* General card styling consistency */
+.card {
+    border: 1px solid #dee2e6; /* Light border for definition */
+}
+
+.card-header {
+    background-color: #f8f9fa; /* A very light grey for headers */
+    border-bottom: 1px solid #dee2e6;
+}
+
+.card-header h5 {
+    margin-bottom: 0.25rem;
+}
+
+/* Ensure form check labels are aligned and easy to click */
+.form-check {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.form-check-label {
+    cursor: pointer;
+}
+
+/* Indicates a field is conditionally required with a red asterisk */
+.form-label.is-required::after {
+    content: ' *';
+    color: var(--bs-danger);
+    font-weight: bold;
+}

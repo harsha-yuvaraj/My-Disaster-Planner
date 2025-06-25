@@ -1,0 +1,305 @@
+{% extends "home/plan/plan_layout.html" %}
+
+{% block styles %}
+{# Add the Tom Select library's stylesheet #}
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/step_3.css') }}">
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Pass the entire plan answers object to JavaScript
+    const planAnswers = {{ plan.answers_json | tojson | safe }};
+    const flCounties = {{ fl_cemw_data | tojson | safe }};
+</script>
+<script src="{{ url_for('static', filename='js/step_3.js') }}" defer></script>
+{# Add the Tom Select library's JavaScript #}
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+{% endblock %}
+
+{% block plan_content %}
+
+<form id="step3Form" method="POST" action="{{ url_for('home.plan_step', plan_id=plan.id, step_num=current_step) }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+
+    {% set decision = plan.answers_json.get("step_2", {}).get("decision") %}
+    {% set is_florida = (plan.is_for_self and current_user.state == "FL") or (not plan.is_for_self and plan.answers_json.get('step_1', {}).get('care_recipient_state', '').strip() == "FL") %}
+
+    {# ============================ EVACUATION PLAN ========================= #}
+    {% if decision == 'evacuate' %}
+    <h4 class="form-section-header">
+        <b>Let's Build {% if plan.is_for_self %}Your{% else %}The{% endif %} Evacuation Plan</b>
+    </h4>
+    <p class="text-muted pb-3">
+        Planning the details of where to go and what to bring will make evacuating smoother and safer.
+    </p>
+
+    <!-- Section A: Destinations -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5><i class="bi bi-geo-alt-fill me-2"></i>Primary Destination</h5>
+            <p class="mb-0 text-muted small">Choose a primary safe place to go.</p>
+        </div>
+        <div class="card-body">
+            <!-- Primary Destination Type -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">1. Select Destination Type</label>
+                <div class="btn-group-vertical w-100" role="group" aria-label="Primary Destination Options">
+                   <input type="radio" class="btn-check" name="evac_primary_destination_type" id="dest-friend" value="friend_family" required>
+                   <label class="btn btn-outline-secondary text-start" for="dest-friend">Friend or Family Member's Home</label>
+                   
+                   <input type="radio" class="btn-check" name="evac_primary_destination_type" id="dest-shelter" value="public_shelter">
+                   <label class="btn btn-outline-secondary text-start" for="dest-shelter">Public Shelter</label>
+                   
+                   <input type="radio" class="btn-check" name="evac_primary_destination_type" id="dest-hotel" value="hotel">
+                   <label class="btn btn-outline-secondary text-start" for="dest-hotel">Hotel</label>
+                   
+                   <input type="radio" class="btn-check" name="evac_primary_destination_type" id="dest-other" value="other">
+                   <label class="btn btn-outline-secondary text-start" for="dest-other">Other</label>
+                </div>
+            </div>
+            
+            <!-- Shelter Info -->
+            <div id="specialNeedsShelterInfo" class="alert alert-info d-none my-3">
+                 <h6 class="alert-heading fw-bold"><i class="bi bi-info-circle-fill me-2"></i>Important Public Shelter Information</h6>
+                 <p class="text-start">Public shelters provide a safe place to stay during a storm, but they only offer basic accommodations. Remember to bring items from your Go-Kit, such as medications, bedding, and personal comfort items, as these are typically not supplied.</p>
+                 <hr>
+                 <p class="mb-2"><strong>If Extra Assistance Required (Special Needs Shelters):</strong></p>
+                 <ul class="mb-2 text-start">
+                     <li>Many Special Needs Shelters provide extra help but require you to pre-register each year.</li>
+                     <li>Contact {% if plan.is_for_self %}your{% else %}the{% endif %} county's Emergency Management office to register.</li>
+                     <li>Be aware that even special needs shelters can be crowded, noisy, and offer little privacy.</li>
+                 </ul>
+                {% if is_florida %}
+                 <div class="mt-3">
+                    <label for="county_select" class="form-label text-start fw-semibold">Select a county to get a direct link to its emergency management website:</label>
+                    {# This input will be enhanced by Tom Select #}
+                    <select id="county_select" name="fl_county" placeholder="-- Choose or type a County --">
+                        <option value="">-- Type For a County --</option>
+                        {% for county, url in fl_cemw_data.items()|sort %}
+                            <option value="{{county}}">{{ county }}</option>
+                        {% endfor %}
+                    </select>
+                 </div>
+                 <div id="county_link_container" class="d-none alert alert-light p-2 mt-2"></div>
+                 {% endif %}
+             </div>
+
+            <!-- Primary Destination Address -->
+            <div class="mb-4">
+                 <label class="form-label fw-bold">2. Do you know the address yet?</label>
+                 <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="primary_knows_address" id="primary_knows_address_yes" value="yes" required>
+                    <label class="btn btn-outline-secondary" for="primary_knows_address_yes">Yes</label>
+                    <input type="radio" class="btn-check" name="primary_knows_address" id="primary_knows_address_no" value="no">
+                    <label class="btn btn-outline-secondary" for="primary_knows_address_no">No</label>
+                 </div>
+            </div>
+
+            <div id="primary_address_container" class="d-none mb-3">
+                <label for="primary_address" class="form-label" id="primary_address_label">Enter Address</label>
+                <input type="text" class="form-control" name="primary_address" id="primary_address" placeholder="e.g., 123 Main St, Anytown, ST 12345">
+            </div>
+
+            <div id="primary_no_address_info" class="alert alert-warning d-none mb-3">
+                <i class="bi bi-lightbulb me-2"></i><strong>Tip:</strong> That's okay. For now, identify the safe place you plan to go to. As the event gets closer, try to secure a specific address soon.
+            </div>
+
+            <!-- Primary Destination Other Details -->
+            <div class="mb-4">
+                <label for="primary_other_details" class="form-label fw-bold" id="primary_other_details_label">3. Other Details</label>
+                <textarea class="form-control" name="primary_other_details" id="primary_other_details" rows="2" placeholder="Enter contact name, phone number, reservation details, or specify other destination type here."></textarea>
+                <div id="primary_other_info" class="alert alert-warning d-none mt-3">
+                    <i class="bi bi-info-circle me-2"></i>This could be a community center, a place of worship, or another location not listed. Please be as specific as possible.
+                </div>
+            </div>
+            
+            <!-- Primary Destination Transportation -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">4. How do you intend on getting there?</label>
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="primary_transport" id="primary_transport_car" value="car" required>
+                    <label class="btn btn-outline-secondary" for="primary_transport_car"> <i class="bi bi-car-front-fill"></i> Car</label>
+                    <input type="radio" class="btn-check" name="primary_transport" id="primary_transport_bus" value="bus">
+                    <label class="btn btn-outline-secondary" for="primary_transport_bus"> <i class="bi bi-bus-front-fill"></i> Bus</label>
+                    <input type="radio" class="btn-check" name="primary_transport" id="primary_transport_air" value="air">
+                    <label class="btn btn-outline-secondary" for="primary_transport_air"> <i class="bi bi-airplane-fill"></i> Air</label>
+                </div>
+            </div>
+
+            <div id="primary_transport_advice_car" class="alert alert-info d-none mt-3">Plan your route in advance, have a backup route, and make sure your vehicle is in good working condition with a full tank of gas. Pack an emergency kit for the car.</div>
+            <div id="primary_transport_advice_bus" class="alert alert-info d-none mt-3">Check with your local transit authority for emergency routes and schedules. Be aware that services may be limited or suspended. Arrive early and pack light.</div>
+            <div id="primary_transport_advice_air" class="alert alert-info d-none mt-3">Book flights as early as possible as they will fill up quickly. Keep in touch with the airline for delays or cancellations. Pack essential items in your carry-on.</div>
+        </div>
+    </div>
+
+    <!-- Backup Destination -->
+     <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5><i class="bi bi-geo-fill me-2"></i>Backup Destination</h5>
+            <p class="mb-0 text-muted small">It's wise to have a second option.</p>
+        </div>
+        <div class="card-body">
+            <!-- Backup Destination Address -->
+            <div class="mb-4">
+                <label for="backup_destination_type" class="form-label fw-bold">1. Backup Destination Type</label>
+                <input type="text" class="form-control" name="backup_destination_type" id="backup_destination_type" placeholder="e.g., Friend's house, Hotel, etc.">
+            </div>
+
+            <div class="mb-4">
+                 <label class="form-label fw-bold">2. Do you know the address yet?</label>
+                 <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="backup_knows_address" id="backup_knows_address_yes" value="yes" required>
+                    <label class="btn btn-outline-secondary" for="backup_knows_address_yes">Yes</label>
+                    <input type="radio" class="btn-check" name="backup_knows_address" id="backup_knows_address_no" value="no">
+                    <label class="btn btn-outline-secondary" for="backup_knows_address_no">No</label>
+                 </div>
+            </div>
+
+            <div id="backup_address_container" class="d-none mb-3">
+                <label for="backup_address" class="form-label" id="backup_address_label">Enter Address</label>
+                <input type="text" class="form-control" name="backup_address" id="backup_address" placeholder="e.g., 456 Oak Ave, Othertown, ST 67890">
+            </div>
+
+            <div id="backup_no_address_info" class="alert alert-warning d-none mb-3">
+                <i class="bi bi-lightbulb me-2"></i><strong>Tip:</strong> Having a backup destination is always a good idea. Finalize details as soon as you can.
+            </div>
+
+            <!-- Backup Destination Other Details -->
+            <div class="mb-4">
+                <label for="backup_other_details" class="form-label fw-bold">3. Other Details</label>
+                <textarea class="form-control" name="backup_other_details" id="backup_other_details" rows="2" placeholder="Enter contact name, phone number, etc."></textarea>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Section B: Go-Kit -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5><i class="bi bi-briefcase-fill me-2"></i>Go-Kit Checklist</h5>
+            <p class="mb-0 text-muted small">Pack these essential items in a "Go-Kit" so {% if plan.is_for_self %}you're{% else %}they're{% endif %} ready to leave quickly.</p>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <label for="gokit_docs_select" class="form-label fw-bold">Important Documents & ID</label>
+                <p class="small text-muted mb-2">Keep these in a waterproof container. Select all that apply.</p>
+                <select id="gokit_docs_select" name="gokit_docs" multiple>
+                    <option value="Driver's license, passport, Social Security card">Driver's license, passport, Social Security card</option>
+                    <option value="Insurance cards and policies (health, home, auto)">Insurance cards and policies (health, home, auto)</option>
+                    <option value="Recent photos of family members">Recent photos of {% if plan.is_for_self %}yourself and family members{% else %}the care recipient and family members{% endif %} in case you are separated</option>
+                </select>
+            </li>
+            <li class="list-group-item">
+                <label for="gokit_medical_select" class="form-label fw-bold">Medical & Health</label>
+                 <p class="small text-muted mb-2">Select all that apply.</p>
+                <select id="gokit_medical_select" name="gokit_medical" multiple>
+                    <option value="2-week supply of all medications and dosage information">2-week supply of all medications and dosage information</option>
+                    <option value="First-aid kit">First-aid kit</option>
+                    <option value="Personal hygiene supplies">Personal hygiene supplies</option>
+                    <option value="Medical equipment (hearing aids, glasses, walker, etc.)">Medical equipment (hearing aids, glasses, walker, etc.)</option>
+                </select>
+            </li>
+            <li class="list-group-item">
+                <label for="gokit_supplies_select" class="form-label fw-bold">Supplies</label>
+                 <p class="small text-muted mb-2">Select all that apply.</p>
+                <select id="gokit_supplies_select" name="gokit_supplies" multiple>
+                    <option value="Food & Drinks">Food & Drinks</option>
+                    <option value="Cash (ATMs and credit card machines may not work)">Cash (ATMs and credit card machines may not work)</option>
+                    <option value="Flashlights and extra batteries">Flashlights and extra batteries</option>
+                    <option value="Cellphone charger and a backup power bank">Cellphone charger and a backup power bank</option>
+                </select>
+            </li>
+            <li class="list-group-item">
+                <label for="gokit_comfort_select" class="form-label fw-bold">Personal Comfort & Pet Supplies</label>
+                <p class="small text-muted mb-2">Select all that apply.</p>
+                <select id="gokit_comfort_select" name="gokit_comfort" multiple>
+                    <option value="Fresh clothing and bedding">Fresh clothing and bedding</option>
+                    <option value="Favorite non-perishable foods or snacks">Favorite non-perishable foods or snacks</option>
+                    <option value="Comforting items (games, books, familiar blanket)">Comforting items (games, books, familiar blanket)</option>
+                    <option value="Pet carrier and supplies (food, water, leash)">Pet carrier and supplies (food, water, leash)</option>
+                </select>
+            </li>
+        </ul>
+    </div>
+
+    {# ======================= SHELTER-IN-PLACE PLAN ======================== #}
+    {% elif decision == 'shelter' %}
+    <h4 class="form-section-header">
+        <i class="bi bi-house-heart-fill me-2"></i>
+        <b>Let's Build {% if plan.is_for_self %}Your{% else %}The{% endif %} Shelter-in-Place Plan</b>
+    </h4>
+    <p class="text-muted pb-3">
+        Being prepared to safely shelter at home means securing the space and having enough supplies to be self-sufficient.
+    </p>
+
+    <!-- Section A: Secure Your Home -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5><i class="bi bi-tools me-2"></i>Secure {% if plan.is_for_self %}Your{% else %}The Care Recipient's{% endif %} Home</h5>
+            <p class="mb-0 text-muted small">Select or add tasks to protect the home from damage.</p>
+        </div>
+        <div class="card-body">
+            <select id="secure_home_select" name="secure_home_items" multiple>
+                <option value="Inspect the roof for loose shingles or tiles">Inspect the roof for loose shingles or tiles</option>
+                <option value="Secure garage doors from the inside">Secure garage doors from the inside</option>
+                <option value="Install window shutters or board up windows">Install window shutters or board up windows</option>
+                <option value="Bring loose outdoor items inside (furniture, decorations, etc.)">Bring loose outdoor items inside (furniture, decorations, etc.)</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Section B: Stay-Kit -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5><i class="bi bi-box-seam-fill me-2"></i>Stay-Kit Checklist</h5>
+            <p class="mb-0 text-muted small">Select or add supplies for at least 7 days without power or outside help.</p>
+        </div>
+        <div class="card-body">
+            <select id="staykit_select" name="staykit_items" multiple>
+                <option value="Water (at least 7 gallons per person)">Water (at least 7 gallons per person)</option>
+                <option value="Non-perishable food for 7 days">Non-perishable food for 7 days</option>
+                <option value="Manual can opener">Manual can opener</option>
+                <option value="2-week supply of all medications">2-week supply of all medications</option>
+                <option value="Cash">Cash</option>
+                <option value="Hygiene supplies">Hygiene supplies</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Section C: Power & Comfort -->
+     <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5><i class="bi bi-lightbulb-fill me-2"></i>Power & Comfort</h5>
+            <p class="mb-0 text-muted small">Select or add items for power outages and maintaining well-being.</p>
+        </div>
+        <div class="card-body">
+             <select id="power_comfort_select" name="power_comfort_items" multiple>
+                <option value="Battery-powered lanterns or flashlights (avoid candles)">Battery-powered lanterns or flashlights (avoid candles)</option>
+                <option value="Battery-operated or hand-crank radio for alerts">Battery-operated or hand-crank radio for alerts</option>
+                <option value="Backup power banks to charge phones">Backup power banks to charge phones</option>
+                <option value="Supply of clean towels and linens">Supply of clean towels and linens</option>
+                <option value="Calming activities that don't require power (e.g., games, folding laundry)">Calming activities that don't require power (e.g., games, folding laundry)</option>
+                <option value="Pre-made meals that can be eaten cold or heated on an outdoor grill">Pre-made meals that can be eaten cold or heated on an outdoor grill</option>
+            </select>
+        </div>
+    </div>
+    {% else %}
+    {# Fallback if decision is not set for some reason #}
+    <div class="alert alert-danger text-center">
+        <h5 class="alert-heading">Decision Not Found</h5>
+        <p>A decision to 'Evacuate' or 'Shelter' was not found in your plan.</p>
+        <p>Please return to the previous step to make a selection.</p>
+        <a href="{{ url_for('home.plan_step', plan_id=plan.id, step_num=2) }}" class="btn btn-brand-primary">
+            <i class="bi bi-arrow-left me-2"></i>Go Back to Risk Assessment
+        </a>
+    </div>
+    {% endif %}
+
+
+    {% if decision %}
+        {% include 'home/plan/controls.html' %}
+    {% endif %}
+</form>
+
+{% endblock %}

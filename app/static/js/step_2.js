@@ -4,10 +4,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const recEvacuate = document.getElementById('recEvacuate');
     const recShelterOptional = document.getElementById('recShelterOptional');
     const recShelterNotReady = document.getElementById('recShelterNotReady');
-    const finalChoiceQuestion = document.getElementById('finalChoiceQuestion'); // New selector
+    const finalChoiceQuestion = document.getElementById('finalChoiceQuestion');
     const allRecs = [recEvacuate, recShelterOptional, recShelterNotReady];
     const saveContinueBtn = document.getElementById('saveContinueBtn');
-    let shelterIsReady_previous, shelterIsReady; 
+    let shelterIsReady_previous, shelterIsReady;
+
+    // Function to load and apply saved answers from the server
+    const loadSavedAnswers = () => {
+        // 'planAnswers' is a global variable defined in the HTML script tag
+        if (typeof planAnswers === 'undefined' || !planAnswers.step_2) {
+            return; // No saved answers found for this step
+        }
+
+        const savedData = planAnswers.step_2;
+
+        // Iterate over each saved answer key-value pair
+        for (const [key, value] of Object.entries(savedData)) {
+            // --- CHANGE: START ---
+            // Find the corresponding radio button by its name and value.
+            // Added [type="radio"] to the selector to ignore the hidden input with the same name.
+            const inputToSelect = document.querySelector(`input[type="radio"][name="${key}"][value="${value}"]`);
+            // --- CHANGE: END ---
+
+            if (inputToSelect) {
+                inputToSelect.checked = true; // Check the radio button
+            }
+        }
+    };
 
     // Helper to hide all recommendations and disable their inputs
     const hideAllRecommendations = () => {
@@ -33,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!mustEvacChecklistCompleted) {
             hideAllRecommendations();
             shelterChecklist.classList.add('d-none');
+            shelterChecklist.querySelectorAll('input').forEach(input => input.disabled = true);
             return;
         }
 
@@ -43,7 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
             recEvacuate.classList.remove('d-none');
             recEvacuate.querySelector('input[name="decision"]').disabled = false;
             if (saveContinueBtn) saveContinueBtn.disabled = false;
+            
+            // Hide AND DISABLE the shelter checklist and its inputs
             shelterChecklist.classList.add('d-none');
+            shelterChecklist.querySelectorAll('input').forEach(input => {
+                input.disabled = true;
+            });
+            
             return;
         }
         
@@ -65,16 +95,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Part 3: Show the final recommendation
-        shelterIsReady_previous = shelterIsReady; // Store previous state for comparison
-        console.log('Previous shelterIsReady:', shelterIsReady_previous);
+        shelterIsReady_previous = shelterIsReady;
         shelterIsReady = Array.from(document.querySelectorAll('input[name^="shelter_"]:checked')).every(radio => radio.value === 'yes');
-        console.log('Shelter is ready:', shelterIsReady);
         if (shelterIsReady) {
             if (shelterIsReady_previous === undefined || shelterIsReady_previous !== shelterIsReady) {
                 hideAllRecommendations();
             }
             recShelterOptional.classList.remove('d-none');
-            finalChoiceQuestion.classList.remove('d-none'); // Show the separate choice div
+            finalChoiceQuestion.classList.remove('d-none');
             finalChoiceQuestion.querySelectorAll('input[name="decision"]').forEach(input => input.disabled = false);
             
             const finalChoiceMade = document.querySelector('#finalChoiceQuestion input[name="decision"]:checked');
@@ -90,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add a single event listener to the form to handle all changes
     document.getElementById('decisionForm').addEventListener('change', updateUIState);
 
-    // Initial call on page load
-    updateUIState();
+    // Initial calls on page load
+    loadSavedAnswers(); // First, load the saved state from the server
+    updateUIState();    // Then, update the UI to reflect the loaded state
 });

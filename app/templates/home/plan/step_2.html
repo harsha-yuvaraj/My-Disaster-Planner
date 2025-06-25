@@ -5,92 +5,223 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+    const planAnswers = {{ plan.answers_json | tojson | safe }};
+</script>
 <script src="{{ url_for('static', filename='js/step_2.js') }}" defer></script>
 {% endblock %}
 
 {% block plan_content %}
 <h5 class="text-muted pb-3">
-    <b>Next, let's assess your risk and determine the safest course of action.</b>
+    <b>Next, let's assess
+        {% if plan.is_for_self %}your{% else %}your care recipient's{% endif %}
+        location-based risk and determine the safest course of action.
+    </b>
 </h5>
 
 <form id="decisionForm" method="POST" action="{{ url_for('home.plan_step', plan_id=plan.id, step_num=current_step) }}">
     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
 
-    <!-- Section A: Official Risk Assessment -->
-    <div class="alert alert-warning d-flex flex-column flex-sm-row align-items-center text-center text-sm-start mb-5" role="alert">
-        <i class="bi bi-exclamation-triangle-fill fs-1 me-sm-3 mb-2 mb-sm-0"></i>
+    <div class="alert alert-warning d-flex flex-column flex-sm-row align-items-center text-center text-sm-start mb-5"
+        role="alert">
+        <i class="bi bi bi-info-circle-fill fs-1 me-sm-3 mb-2 mb-sm-0"></i>
         <div>
             <h6 class="alert-heading fw-bold">Official Risk Assessment</h6>
             <p class="mb-1">Based on the address provided, here is the official risk data:</p>
-            <ul class="mb-0 small">
-                <li><strong>Hurricane Evacuation Zone:</strong> {{ risk_data.evac_zone | default('Not Available', true) }}</li>
-                <li><strong>FEMA Flood Zone:</strong> {{ risk_data.flood_zone | default('Not Available', true) }}</li>
-                <li>For local alerts and shelter information, visit the <a href="{{ risk_data.county_url | default('#', true) }}" target="_blank" class="alert-link">{{ risk_data.county_name | default('Your County', true) }} Emergency Management website</a>.</li>
+            <ul class="mb-0">
+                <li><strong>Address:</strong> {{ plan.answers_json.get("flood_risk").address | default('Not Available', true) }}</li>
+                <li><strong>Evacuation Zone:</strong> 
+                    {% if (plan.is_for_self and current_user.state == "FL") or (plan.answers_json.get('step_1', {}).get('care_recipient_state', '') == "FL")  %}
+                    In state of Florida, your evacuation zone can be found <a href="https://floridadisaster.maps.arcgis.com/apps/instant/lookup/index.html?appid=aa18a2d8737c4d66bb6434a09e17203a" target="_blank">here</a>.
+                    {% else %}
+                    Please visit your official state or county emergency management website.
+                    {% endif %}
+                </li>
+                 <li><strong>FEMA Flood Zone:</strong> {{ plan.answers_json.get("flood_risk", {}).flood_risk_zones | default('Not Available', true) }} 
+                    {% if plan.answers_json.get("flood_risk", {}).get("flood_risk_zones","").strip() and plan.answers_json.get("flood_risk", {}).get("flood_risk_zones","").strip() != "No infomation available" %}
+                        {% if plan.answers_json.get("flood_risk", {}).get("risk_level",'') %}
+                          ( {{ plan.answers_json.get("flood_risk", {}).risk_level }} 
+                          {% if plan.answers_json.get("flood_risk", {}).get("risk_description","").strip() %}
+                            - {{ plan.answers_json.get("flood_risk", {}).risk_description }}
+                          {% endif %}
+                          )
+                        {% endif %}
+                    {% endif %}
+                </li>
             </ul>
+            <p class="mt-1">  
+                You can also lookup your address on the                  
+                <a href="https://msc.fema.gov/portal/home" target="_blank" rel="noopener noreferrer">
+                     FEMA Flood Map Service Center
+                </a>
+                for visual confirmation.
+            </p>
         </div>
     </div>
 
-    <!-- Section B: Checklists -->
     <div id="mustEvacuateChecklist">
         <h4 class="form-section-header">
             <i class="bi bi-shield-exclamation me-2"></i>
             <b>Safety Checklist: Immediate Evacuation Factors</b>
         </h4>
-        <p class="text-muted">Based on your official risk, please answer these critical questions.</p>
+        <p class="text-muted">Based on {% if plan.is_for_self %}your official risk{% else %}the official risk assessment{% endif %}, please answer these critical questions.</p>
         <div class="list-group">
-            <!-- Questions 1-5 -->
-            <div class="list-group-item"><p class="fw-bold mb-1">Have local authorities issued an evacuation order for this zone?</p><div class="btn-group" role="group"><input type="radio" class="btn-check" name="must_evac_q1" id="q1-yes" value="yes" required><label class="btn btn-outline-secondary" for="q1-yes">Yes</label><input type="radio" class="btn-check" name="must_evac_q1" id="q1-no" value="no"><label class="btn btn-outline-secondary" for="q1-no">No</label></div></div>
-            <div class="list-group-item"><p class="fw-bold mb-1">{% if plan.is_for_self %}Is your home{% else %}Is their home{% endif %} a mobile home, RV, or manufactured home?</p><div class="btn-group" role="group"><input type="radio" class="btn-check" name="must_evac_q2" id="q2-yes" value="yes" required><label class="btn btn-outline-secondary" for="q2-yes">Yes</label><input type="radio" class="btn-check" name="must_evac_q2" id="q2-no" value="no"><label class="btn btn-outline-secondary" for="q2-no">No</label></div></div>
-            <div class="list-group-item"><p class="fw-bold mb-1">{% if plan.is_for_self %}Do you rely{% else %}Do they rely{% endif %} on electric medical devices (e.g., oxygen, CPAP) without a reliable backup generator?</p><div class="btn-group" role="group"><input type="radio" class="btn-check" name="must_evac_q3" id="q3-yes" value="yes" required><label class="btn btn-outline-secondary" for="q3-yes">Yes</label><input type="radio" class="btn-check" name="must_evac_q3" id="q3-no" value="no"><label class="btn btn-outline-secondary" for="q3-no">No</label></div></div>
-            <div class="list-group-item"><p class="fw-bold mb-1">{% if plan.is_for_self %}Are you{% else %}Are they{% endif %} at high risk for heat-related illness if the A/C fails?</p><div class="btn-group" role="group"><input type="radio" class="btn-check" name="must_evac_q4" id="q4-yes" value="yes" required><label class="btn btn-outline-secondary" for="q4-yes">Yes</label><input type="radio" class="btn-check" name="must_evac_q4" id="q4-no" value="no"><label class="btn btn-outline-secondary" for="q4-no">No</label></div></div>
-            <div class="list-group-item"><p class="fw-bold mb-1">{% if plan.is_for_self %}Is your home{% else %}Is their home{% endif %} a high-rise where a power outage would prevent escape (e.g., no elevator)?</p><div class="btn-group" role="group"><input type="radio" class="btn-check" name="must_evac_q5" id="q5-yes" value="yes" required><label class="btn btn-outline-secondary" for="q5-yes">Yes</label><input type="radio" class="btn-check" name="must_evac_q5" id="q5-no" value="no"><label class="btn btn-outline-secondary" for="q5-no">No</label></div></div>
+            <div class="list-group-item">
+                <p class="fw-bold mb-1"> {% if plan.is_for_self %}Are you{% else %}Is the person in your care{% endif %}
+                    in a high-risk evacuation zone or an area with a history of flooding?</p>
+                <div class="btn-group" role="group"><input type="radio" class="btn-check" name="must_evac_q1"
+                        id="q1-yes" value="yes" required><label class="btn btn-outline-secondary"
+                        for="q1-yes">Yes</label><input type="radio" class="btn-check" name="must_evac_q1" id="q1-no"
+                        value="no"><label class="btn btn-outline-secondary" for="q1-no">No</label></div>
+            </div>
+            <div class="list-group-item">
+                <p class="fw-bold mb-1">{% if plan.is_for_self %}Is your home{% else %}Is their home{% endif %} a mobile
+                    home, RV, or manufactured home?</p>
+                <div class="btn-group" role="group"><input type="radio" class="btn-check" name="must_evac_q2"
+                        id="q2-yes" value="yes" required><label class="btn btn-outline-secondary"
+                        for="q2-yes">Yes</label><input type="radio" class="btn-check" name="must_evac_q2" id="q2-no"
+                        value="no"><label class="btn btn-outline-secondary" for="q2-no">No</label></div>
+            </div>
+            <div class="list-group-item">
+                <p class="fw-bold mb-1">{% if plan.is_for_self %}Do you rely{% else %}Do they rely{% endif %} on
+                    electric medical devices (e.g., oxygen, CPAP, nebulizer, or feeding tubes) and do not have a
+                    reliable generator?</p>
+                <div class="btn-group" role="group"><input type="radio" class="btn-check" name="must_evac_q3"
+                        id="q3-yes" value="yes" required><label class="btn btn-outline-secondary"
+                        for="q3-yes">Yes</label><input type="radio" class="btn-check" name="must_evac_q3" id="q3-no"
+                        value="no"><label class="btn btn-outline-secondary" for="q3-no">No</label></div>
+            </div>
+            <div class="list-group-item">
+                <p class="fw-bold mb-1">{% if plan.is_for_self %}Are you{% else %}Are they{% endif %} at high risk for
+                    heat-related illness if the A/C fails?</p>
+                <div class="btn-group" role="group"><input type="radio" class="btn-check" name="must_evac_q4"
+                        id="q4-yes" value="yes" required><label class="btn btn-outline-secondary"
+                        for="q4-yes">Yes</label><input type="radio" class="btn-check" name="must_evac_q4" id="q4-no"
+                        value="no"><label class="btn btn-outline-secondary" for="q4-no">No</label></div>
+            </div>
+            <div class="list-group-item">
+                <p class="fw-bold mb-1">{% if plan.is_for_self %}Is your home{% else %}Is their home{% endif %} a
+                    high-rise where a power outage where a power outage would leave you without access to an elevator or
+                    water?</p>
+                <div class="btn-group" role="group"><input type="radio" class="btn-check" name="must_evac_q5"
+                        id="q5-yes" value="yes" required><label class="btn btn-outline-secondary"
+                        for="q5-yes">Yes</label><input type="radio" class="btn-check" name="must_evac_q5" id="q5-no"
+                        value="no"><label class="btn btn-outline-secondary" for="q5-no">No</label></div>
+            </div>
         </div>
     </div>
 
-    <!-- Checklist 2: Shelter-in-Place Readiness (Initially Hidden) -->
     <div id="shelterChecklist" class="d-none mt-5">
-        <h4 class="form-section-header"><i class="bi bi-house-heart-fill me-2"></i><b>Readiness Checklist: Sheltering in Place</b></h4>
-        <p class="text-muted">You meet the initial safety criteria. Let's confirm {% if plan.is_for_self %}your home is{% else %}their home is{% endif %} prepared.</p>
+        <h4 class="form-section-header"><i class="bi bi-house-heart-fill me-2"></i><b>Readiness Checklist: Sheltering in
+                Place</b></h4>
+        <p class="text-muted">{% if plan.is_for_self %}You meet the initial safety criteria.{% else %}The initial safety criteria are met.{% endif %} Let's confirm {% if plan.is_for_self %}your home
+            is{% else %}their home is{% endif %} prepared.</p>
         <div class="list-group">
-            <div class="list-group-item"><p class="fw-bold mb-1">Can the home withstand hurricane-force winds (considering roof, windows, etc.)?</p><div class="btn-group" role="group"><input type="radio" class="btn-check" name="shelter_q1" id="sq1-yes" value="yes" required disabled><label class="btn btn-outline-secondary" for="sq1-yes">Yes</label><input type="radio" class="btn-check" name="shelter_q1" id="sq1-no" value="no"><label class="btn btn-outline-secondary" for="sq1-no">No / Unsure</label></div></div>
-            <div class="list-group-item"><p class="fw-bold mb-1">Is there a reliable support person nearby who can provide physical assistance if needed?</p><div class="btn-group" role="group"><input type="radio" class="btn-check" name="shelter_q2" id="sq2-yes" value="yes" required disabled><label class="btn btn-outline-secondary" for="sq2-yes">Yes</label><input type="radio" class="btn-check" name="shelter_q2" id="sq2-no" value="no"><label class="btn btn-outline-secondary" for="sq2-no">No</label></div></div>
-            <div class="list-group-item"><p class="fw-bold mb-1">Are there enough supplies (food, water, medications) to last at least 7 days without outside help?</p><div class="btn-group" role="group"><input type="radio" class="btn-check" name="shelter_q3" id="sq3-yes" value="yes" required disabled><label class="btn btn-outline-secondary" for="sq3-yes">Yes</label><input type="radio" class="btn-check" name="shelter_q3" id="sq3-no" value="no"><label class="btn btn-outline-secondary" for="sq3-no">No</label></div></div>
+
+            <div class="list-group-item">
+                <p class="fw-bold mb-2">Can {% if plan.is_for_self %}your{% else %}their{% endif %} home withstand hurricane-force winds (considering the roof, windows, and
+                    whether garage doors can be secured from the inside)?
+                    <a href="#" class="small" data-bs-toggle="modal" data-bs-target="#hurricaneInfoModal">
+                        Learn more about hurricane winds.
+                    </a>
+                </p>
+
+                <div class="alert alert-info d-flex align-items-center p-2 mt-3 small text-start">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <div>
+                        Experience from prior hurricane shows that securing a garage door can help keep a house intact
+                        during a hurricane.
+                    </div>
+                </div>
+
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="shelter_q1" id="sq1-yes" value="yes" required
+                        disabled><label class="btn btn-outline-secondary" for="sq1-yes">Yes</label>
+                    <input type="radio" class="btn-check" name="shelter_q1" id="sq1-no" value="no" required
+                        disabled><label class="btn btn-outline-secondary" for="sq1-no">No</label>
+                </div>
+
+            </div>
+
+            <div class="list-group-item">
+                <p class="fw-bold mb-1">Is there a reliable support person nearby who can provide physical assistance {% if not plan.is_for_self %}to your care recipient{% endif %} if
+                    needed?</p>
+                <div class="btn-group" role="group"><input type="radio" class="btn-check" name="shelter_q2" id="sq2-yes"
+                        value="yes" required disabled><label class="btn btn-outline-secondary"
+                        for="sq2-yes">Yes</label><input type="radio" class="btn-check" name="shelter_q2" id="sq2-no"
+                        value="no" required disabled><label class="btn btn-outline-secondary" for="sq2-no">No</label>
+                </div>
+            </div>
+
+            <div class="list-group-item">
+                <p class="fw-bold mb-1">Are there enough supplies (food, water, medications) to last at least 7 days
+                    without outside help?</p>
+
+                <div class="alert alert-info d-flex align-items-center p-2 mt-3 small text-start">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <div>
+                        The Federal Emergency Management Agency (FEMA) and the Red Cross recommend keeping at least 1
+                        gallon of water per person, per day.
+                    </div>
+                </div>
+
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="shelter_q3" id="sq3-yes" value="yes" required
+                        disabled><label class="btn btn-outline-secondary" for="sq3-yes">Yes</label>
+                    <input type="radio" class="btn-check" name="shelter_q3" id="sq3-no" value="no" required
+                        disabled><label class="btn btn-outline-secondary" for="sq3-no">No</label>
+                </div>
+
+
+            </div>
+
         </div>
     </div>
-    
-    <!-- Section C: Recommendation and Actions -->
+
     <div id="recommendationContainer" class="mt-5">
         <div id="recEvacuate" class="text-center p-4 rounded-3 bg-danger-subtle d-none fade-in">
             <h5 class="fw-bold text-danger-emphasis">Based on your answers, evacuation is strongly recommended.</h5>
-            <p>For your safety, please proceed with creating an evacuation plan.</p>
+            <p>
+                For {% if plan.is_for_self %}your{% else %}your care recipient's{% endif %} safety, please proceed with creating an evacuation plan.
+            </p>
             <input type="hidden" name="decision" value="evacuate" disabled />
         </div>
 
         <div id="recShelterOptional" class="text-center p-4 rounded-3 rec-box-success d-none fade-in">
-            <h5 class="fw-bold text-success-emphasis">Based on your answers, sheltering in place is a viable option.</h5>
-            <p class="mb-0">However, the choice is yours. Evacuating is always the safest course of action if you are unsure.</p>
+            <h5 class="fw-bold text-success-emphasis">Based on your answers, sheltering in place is a viable option.
+            </h5>
+            <p class="mb-0">However, the choice is yours. Evacuating is always the safest course of action if you are
+                unsure.</p>
         </div>
 
         <div id="recShelterNotReady" class="text-center p-4 rounded-3 bg-warning-subtle d-none fade-in">
-            <h5 class="fw-bold text-warning-emphasis">Your home may not be fully prepared for sheltering.</h5>
-            <p>While you don't meet the criteria for a mandatory evacuation, a key safety or supply requirement is missing. Evacuation is the recommended path.</p>
+            <h5 class="fw-bold text-warning-emphasis">
+                {% if plan.is_for_self %}Your{% else %}Their{% endif %} home may not be fully prepared for sheltering.
+            </h5>
+            <p>
+                While {% if plan.is_for_self %}you don't{% else %}they don't{% endif %} meet the criteria for a mandatory evacuation, a key safety or supply requirement is
+                missing. Evacuation is the recommended path.
+            </p>
             <input type="hidden" name="decision" value="evacuate" disabled />
         </div>
-        
-        <!-- NEW: Final Choice Question is now separate -->
+
         <div id="finalChoiceQuestion" class="text-center mt-4 d-none fade-in">
-            <hr>
             <p class="fw-bold mt-4">What would you like to plan for?</p>
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <input type="radio" class="btn-check" name="decision" id="final-evacuate" value="evacuate" required disabled>
-                <label class="btn btn-outline-success" for="final-evacuate">Evacuation Plan</label>
-                
-                <input type="radio" class="btn-check" name="decision" id="final-shelter" value="shelter" required disabled>
-                <label class="btn btn-outline-success" for="final-shelter">Shelter-in-Place Plan</label>
+                <input type="radio" class="btn-check" name="decision" id="final-evacuate" value="evacuate" required
+                    disabled>
+                <label class="btn btn-outline-success" for="final-evacuate">Evacuation</label>
+
+                <input type="radio" class="btn-check" name="decision" id="final-shelter" value="shelter" required
+                    disabled>
+                <label class="btn btn-outline-success" for="final-shelter">Shelter-in-place</label>
             </div>
         </div>
     </div>
 
     {% include 'home/plan/controls.html' %}
 </form>
+
+{% include 'home/info_modules/hurricane_winds_module.html' %}
+
 {% endblock %}
