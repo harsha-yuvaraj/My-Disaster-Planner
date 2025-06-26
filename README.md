@@ -14,5 +14,9 @@ This project is a disaster prepardenss app unders the supervision of School of A
 
 
 4- FetchAPI AI is in two files -> chatbot.py and llm.py -> not a RAG , just a generic llm called with an API
+
+
+
+
 5- RAG model is in rag.py with its req in a txt file
 
