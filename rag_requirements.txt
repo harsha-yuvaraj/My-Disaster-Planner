@@ -1,0 +1,54 @@
+# Core LangChain and LangGraph Framework
+langgraph>=0.0.60
+langchain-core>=0.1.40
+langchain-community>=0.0.38
+langchain>=0.1.16
+
+# Vector Store and Embeddings
+langchain-chroma>=0.1.0
+langchain-huggingface>=0.0.3
+chromadb>=0.4.15
+sentence-transformers>=2.2.2
+
+# Document Processing
+pypdf>=3.17.0
+
+# HuggingFace Integration
+huggingface-hub>=0.17.0
+transformers>=4.35.0
+torch>=2.0.0
+
+# Data Processing and Utilities
+numpy>=1.24.0
+pandas>=2.0.0
+python-dotenv>=1.0.0
+
+# System Requirements
+typing-extensions>=4.5.0
+
+# Optional: LLM Providers (uncomment as needed)
+# Ollama Local LLM
+# ollama>=0.1.0
+
+# OpenAI Integration
+# langchain-openai>=0.0.8
+# openai>=1.0.0
+
+# Anthropic Claude Integration
+# langchain-anthropic>=0.1.0
+# anthropic>=0.7.0
+
+# Additional useful packages for RAG systems
+faiss-cpu>=1.7.4  # Alternative vector store (CPU version)
+# faiss-gpu>=1.7.4  # GPU version (uncomment if you have CUDA)
+
+# Text processing utilities
+nltk>=3.8.1
+tiktoken>=0.5.0  # Token counting for OpenAI models
+
+# Web scraping (if you want to add web sources later)
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+
+# Progress bars and logging
+tqdm>=4.65.0
