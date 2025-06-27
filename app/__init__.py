@@ -1,5 +1,5 @@
 # app/__init__.py
-from flask import Flask, render_template
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_seasurf import SeaSurf
 from flask_migrate import Migrate
@@ -41,7 +41,7 @@ def create_app(config_class=Config):
     # A simple route to about page
     @app.route('/')
     def index():
-        return render_template('about.html', title='About Page')
+        return redirect(url_for('auth.login')) # Redirect to the login page
 
     # Import models here to ensure they are known to Flask-Migrate
     # and for the shell context processor in run.py

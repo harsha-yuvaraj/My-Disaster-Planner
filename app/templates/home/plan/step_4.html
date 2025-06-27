@@ -1,0 +1,84 @@
+{% extends "home/plan/plan_layout.html" %}
+
+{% block styles %}
+{# No custom styles are needed for this step, but the block is preserved for consistency. #}
+{% endblock %}
+
+{% block scripts %}
+{# No custom JS are needed for this step, but the block is preserved for consistency. #}
+{% endblock %}
+
+{% block plan_content %}
+
+<h4 class="text-muted pb-3">
+    <i class="bi bi-shield-check"></i>
+    <b>Your {% if not plan.is_for_self %}Care Recipient's{% endif %} Disaster Plan</b>
+</h4>
+<h5 class="pb-3 small text-success">
+    <b>Almost Done!</b>
+</h5>
+
+<form id="finalizeForm" method="POST" action="{{ url_for('home.plan_step', plan_id=plan.id, step_num=current_step) }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="form-check form-switch fs-5 p-0 d-flex align-items-center">
+                <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="email_plan_switch" name="email_user" value="true" checked>
+                <label class="form-check-label logo-color" for="email_plan_switch">
+                    Do you want this plan to be emailed to you?
+                </label>
+            </div>
+            <div class="form-text mt-2 ps-1">
+                A PDF copy of the completed plan will be sent to your email address <b>{{current_user.email}}</b>.
+            </div>
+
+            {% set recipient_email = plan.answers_json.get('step_1', {}).get('care_recipient_email') %}
+            {% if not plan.is_for_self and recipient_email %}
+            <hr class="my-4">
+            <div class="form-check form-switch fs-5 p-0 d-flex align-items-center">
+                <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="email_recipient_switch" name="email_care_recipient" value="true" checked>
+                <label class="form-check-label logo-color" for="email_recipient_switch">
+                    Would you also like to send a copy to your care recipient?
+                </label>
+            </div>
+            <div class="form-text mt-2 ps-1">
+                A copy will also be sent to <b>{{ recipient_email }}</b>.
+            </div>
+            {% endif %}
+            {# --- END NEW --- #}
+
+        </div>
+    </div>
+
+
+    <div class="alert alert-info d-flex flex-column flex-md-row align-items-center text-center text-md-start" role="alert">
+      <i class="bi bi-share-fill fs-1 me-md-3 mb-2 mb-md-0"></i>
+      <div>
+        <h6 class="alert-heading fw-bold">Share with Your Circle</h6>
+        <p class="mb-0">
+            After generating the plan, {% if plan.is_for_self %}you will{% else %}you'll{% endif %} have the chance to share it with the other contacts in your circle. Keeping everyone informed is a key part of any good safety plan.
+        </p>
+      </div>
+    </div>
+
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body text-center">
+            <h5 class="card-title fw-bold logo-color">This Plan is a Living Document</h5>
+            <p class="card-text text-muted mb-0">
+                {% if plan.is_for_self %}Your{% else %}A person's{% endif %} needs and situation can change. Remember to review and update this plan at least once a year, or whenever circumstances change.
+            </p>
+        </div>
+    </div>
+
+
+    <div class="d-flex justify-content-end mt-5">
+        <button type="submit" id="generatePlanBtn" class="btn btn-success btn-responsive rounded-pill mx-2">
+            <i class="bi bi-check-circle-fill me-2"></i>Generate Plan
+        </button>
+    </div>
+
+</form>
+
+{% endblock %}

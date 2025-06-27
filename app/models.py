@@ -82,6 +82,11 @@ class User(UserMixin, db.Model):
         today = date.today()
         # This calculates the years difference, then subtracts 1 if the birthday hasn't occurred yet this year.
         return today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
+    
+    @property
+    def address(self):
+        """Returns the user's full address as a formatted string."""
+        return f"{self.street_address}, {self.city}, {self.state} {self.zip_code}, USA"
 
     def __repr__(self):
         return f'<User {self.first_name} {self.last_name} - ({self.email})>'

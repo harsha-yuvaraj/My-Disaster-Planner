@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateShelterInfoVisibility = () => {
         if (!specialNeedsShelterInfo) return; 
         const selectedDestination = document.querySelector('input[name="evac_primary_destination_type"]:checked');
-        specialNeedsShelterInfo.classList.toggle('d-none', selectedDestination?.value !== 'public_shelter');
+        specialNeedsShelterInfo.classList.toggle('d-none', selectedDestination?.value !== 'Public Shelter');
     };
     
     /**
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isEvacPlan || !primaryOtherDetails || !primaryOtherDetailsLabel) return;
         
         const selectedDestinationType = document.querySelector('input[name="evac_primary_destination_type"]:checked');
-        const isOther = selectedDestinationType?.value === 'other';
+        const isOther = selectedDestinationType?.value === 'Other';
         
         primaryOtherDetails.required = isOther;
         primaryOtherDetailsLabel.classList.toggle('is-is-required', isOther);
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (!selectedDestinationType) {
                 isValid = false;
-            } else if (selectedDestinationType.value === 'other' && primaryOtherDetails.value.trim() === '') {
+            } else if (selectedDestinationType.value === 'Other' && primaryOtherDetails.value.trim() === '') {
                 isValid = false;
             }
         }

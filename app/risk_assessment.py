@@ -152,3 +152,109 @@ def get_flood_risk_by_address(address):
         'latitude': lat,
         'longitude': lon
     }
+
+
+def get_travel_distance_and_time(address_pairs):
+    """
+    Calculates the distance and travel time using the Google Routes API.
+
+    Args:
+        address_pairs (dict): A dictionary containing travel mode and address pairs.
+            Example:
+            {
+              "travel_by": "car",
+              "route1": {'source': '123 Main St, Anytown, USA', 'dest': '456 Oak Ave, Anytown, USA'}
+            }
+
+    Returns:
+        dict: A dictionary with the same keys as the input address pairs, with values
+              containing the distance in miles and the travel time in hours and minutes.
+    """
+    travel_by = address_pairs.get("travel_by", "car")
+    # Google Routes API uses 'DRIVE' for car and 'TRANSIT' for bus
+    google_travel_mode = "TRANSIT" if travel_by == "bus" else "DRIVE"
+
+    results = {}
+    api_key = current_app.config.get("GOOGLE_API_KEY")
+    api_url = current_app.config.get("GOOGLE_ROUTES_API_URL")
+
+    headers = {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': api_key,
+        'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters'
+    }
+
+    for key, addresses in address_pairs.items():
+        if key == "travel_by":
+            continue
+
+        source = addresses.get('source')
+        dest = addresses.get('dest')
+
+        if not source or not dest:
+            results[key] = {
+                'distance_miles': 'N/A',
+                'time_hours': 'N/A',
+                'time_minutes': 'N/A',
+                'error': 'Source or destination address is missing.'
+            }
+            continue
+
+        payload = {
+            'origin': {'address': source},
+            'destination': {'address': dest},
+            'travelMode': google_travel_mode,
+        }
+
+        try:
+            response = requests.post(api_url, json=payload, headers=headers, timeout=10)
+            response.raise_for_status()  # Raises an exception for 4xx/5xx errors
+            data = response.json()
+
+            # A successful request with no route found returns an empty JSON object {}
+            if data and data.get('routes'):
+                route = data['routes'][0]
+                distance_meters = route.get('distanceMeters', 0)
+                # Convert meters to miles (1 mile = 1609.34 meters)
+                distance_miles = round(distance_meters / 1609.34, 1)
+
+                # Duration is a string ending in 's' (e.g., "359s").
+                duration_str = route.get('duration', '0s')
+                duration_seconds = int(duration_str.rstrip('s'))
+                
+                time_hours = duration_seconds // 3600
+                time_minutes = (duration_seconds % 3600) // 60
+
+                results[key] = {
+                    'distance_miles': distance_miles,
+                    'time_hours': time_hours,
+                    'time_minutes': time_minutes
+                }
+            else:
+                # Handle cases where no route is found or API returns an error object
+                error_message = data.get('error', {}).get('message', 'No route found.')
+                results[key] = {
+                    'distance_miles': 'N/A',
+                    'time_hours': 'N/A',
+                    'time_minutes': 'N/A',
+                    'error': error_message
+                }
+
+        except requests.exceptions.RequestException as e:
+            print(f"Google Routes API request failed for key '{key}': {e}")
+            results[key] = {
+                'distance_miles': 'N/A',
+                'time_hours': 'N/A',
+                'time_minutes': 'N/A',
+                'error': 'API request failed.'
+            }
+        except (KeyError, IndexError, ValueError):
+            # Handles issues with parsing the response (e.g., unexpected format, int conversion)
+            results[key] = {
+                'distance_miles': 'N/A',
+                'time_hours': 'N/A',
+                'time_minutes': 'N/A',
+                'error': 'Could not parse API response.'
+            }
+
+    return results

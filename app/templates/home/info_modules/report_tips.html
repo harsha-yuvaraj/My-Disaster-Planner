@@ -1,0 +1,191 @@
+    {% if decision == "evacuate" and not plan.is_for_self %}
+    <div class="card">
+        <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle me-2" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+        </svg>
+        Key Evacuation Tips
+        </h2>
+
+    <h4>Communication is Key</h4>
+    <ul>
+        <li>
+            Stay calm and use simple, direct statements; the person you are caring for will respond to the tone you set. Instead of correcting them, use affirmation and reassurance.
+        </li>
+        <li>
+            Know what specifically provides comfort to your loved one, whether it's holding their hand, listening to certain music, or looking at familiar photos.
+        </li>
+        <li>
+            Consider carrying an Alzheimer's Association Companion Card to discreetly inform others that your companion may need extra help and patience.
+        </li>
+    </ul>
+    <hr>
+    <h4>Plan Their Route & Meeting Place</h4>
+    <ul>
+        <li>
+           When planning the route, consider how long the person you care for can sit comfortably and how much fuel it will take to get there.
+        </li>
+        <li>
+           Share this evacuation plan with your or the care recipient's support circle, and be sure to include at least one contact who lives outside the disaster area.
+        </li>
+        <li>
+            Choose a safe meeting place outside and far away from their home where everyone can gather after leaving.
+        </li>
+    </ul>
+    <hr>
+    <h4>Maintain Their Routines & Provide Comfort</h4>
+    <ul>
+        <li>
+           During the disruption, try to maintain their normal routines as much as possible, especially for eating and medication.
+        </li>
+        <li>
+            Be sure to pack familiar items that will provide comfort to them, such as a favorite blanket, a stuffed toy, or games.
+        </li>
+    </ul>
+    </div>
+    {% elif decision == "evacuate" and plan.is_for_self %}
+    <div class="card">
+        <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle me-2" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+        </svg>
+        Key Evacuation Tips
+        </h2>
+
+        <h4>Communication is Key</h4>
+        <ul>
+            <li>
+                Stay calm and think clearly by using simple, direct internal thoughts. The tone you set for yourself can influence your response. Instead of second-guessing, focus on affirmation and reassurance.
+            </li>
+            <li>
+                Know what specifically provides comfort to you in stressful situations, whether it's listening to certain music, having a favorite snack, or reviewing your plan.
+            </li>
+            <li>
+                Keep a card with your emergency contact information and any important medical notes in your wallet or Go-Kit to easily share with first responders if needed.
+            </li>
+        </ul>
+        <hr>
+        <h4>Plan Your Route & Meeting Place</h4>
+        <ul>
+            <li>
+                When planning your route, consider how long you can sit comfortably in a car, how much fuel you'll need, and pre-plan for rest stops.
+            </li>
+            <li>
+                Share your evacuation plan with your support circle, and be sure to include at least one contact who lives outside the immediate disaster area.
+            </li>
+            <li>
+                Choose a safe, specific meeting place for your family or support circle to gather after evacuating, located away from your home.
+            </li>
+        </ul>
+        <hr>
+        <h4>Maintain Your Routines & Provide Comfort</h4>
+        <ul>
+            <li>
+                During the disruption, try to maintain your normal routines as much as possible, especially for eating, sleeping, and taking any necessary medication.
+            </li>
+            <li>
+                Be sure to pack familiar items that will provide you with comfort or distraction, such as a favorite book, a tablet with downloaded movies, or games.
+            </li>
+        </ul>
+    </div>
+    {% elif decision == "shelter" and not plan.is_for_self %}
+        <div class="card">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle me-2" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                </svg>
+                Key Shelter-in-Place Tips
+            </h2>
+        
+            <h4>Prepare Space</h4>
+            <ul>
+                <li>
+                    Designate a safe room or specific space in home to store critical supplies.
+                </li>
+                <li>
+                    Gather supplies to last for at least 7 days, including water (at least 7 gallons per person) and non-perishable food that includes comforting and familiar items.
+                </li>
+                <li>
+                    Plan for a power loss by having multiple flashlights and/or battery-powered lanterns and extra batteries.
+                </li>
+            </ul>
+            <hr>
+            <h4>Organize Critical Supplies</h4>
+            <ul>
+                <li>
+                    Keep at least a two-week supply of all necessary medications for both yourself and the person you care for.
+                </li>
+                <li>
+                    Have cash on hand in case power outages prevent the use of ATMs or credit cards.
+                </li>
+                <li>
+                    Assemble a kit with first-aid, hygiene supplies, and cleaning products, and remember to include pet food and supplies if needed.
+                </li>
+            </ul>
+            <hr>
+            <h4>Maintain Routines & Provide Comfort</h4>
+            <ul>
+                <li>
+                    As much as possible, try to maintain normal routines for the person you care for, especially for eating, sleeping, and medication.
+                </li>
+                <li>
+                    To help create a sense of normalcy, prepare and freeze meal-sized servings of their favorite dishes that can be heated with an outdoor grill or camp stove if you lose power.
+                </li>
+                <li>
+                    Plan calming, power-free activities that your loved one enjoys, such as folding laundry, doing puzzles, or playing games.
+                </li>
+            </ul>
+        </div>
+    {% elif decision == "shelter" and plan.is_for_self %}
+        <div class="card">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle me-2" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                </svg>
+                Key Shelter-in-Place Tips
+            </h2>
+        
+            <h4>Prepare Your Space</h4>
+            <ul>
+                <li>
+                    Designate a specific room in your home as a safe room to store your essential items.
+                </li>
+                <li>
+                    Gather supplies to last for a minimum of one week. This should include at least 7 gallons of water, non-perishable food, and a manual can opener.
+                </li>
+                <li>
+                    Prepare for power outages by having multiple flashlights, battery-powered lanterns, and extra batteries readily available.
+                </li>
+            </ul>
+            <hr>
+            <h4>Organize Your Critical Supplies</h4>
+            <ul>
+                <li>
+                    Keep at least a two-week supply of all your necessary medications.
+                </li>
+                <li>
+                    Have cash on hand in case power outages prevent the use of ATMs or credit cards.
+                </li>
+                <li>
+                    Assemble a kit with first-aid, hygiene supplies, and cleaning products. If you have pets, remember their food and supplies as well.
+                </li>
+            </ul>
+            <hr>
+            <h4>Maintain Your Routines & Comfort</h4>
+            <ul>
+                <li>
+                    Try to maintain your normal routines as much as possible, particularly for meals and taking medication.
+                </li>
+                <li>
+                    Prepare and freeze some of your favorite meals ahead of time. These can be heated on an outdoor grill or camp stove if you lose power.
+                </li>
+                <li>
+                    Plan for calming, power-free activities you can do, such as reading a book, doing puzzles, or playing games.
+                </li>
+            </ul>
+        </div>
+    {% endif %}
