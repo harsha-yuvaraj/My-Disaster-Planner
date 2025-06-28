@@ -63,7 +63,7 @@ def delete_object_from_s3(object_name):
         return True
     except ClientError as e:
         print(f"[S3] Failed to delete '{object_name}' by {repr(current_user)}: {e}")
-        return None
+        return False
     
 
 def download_file_as_bytesio(object_name):

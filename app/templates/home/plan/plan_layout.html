@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-10 text-center">
             <h1 class="display-5 logo-color">{{plan.name}}</h1>
-            <p class="text-muted" style="font-size: 1rem;">Plan Status: {{ Status | default('Developing') }}, Recipient: {% if plan.is_for_self %}Yourself{% else %}{{ plan.answers_json.get("step_1",{}).get("care_recipient_name","For Someone you care for.")}}{% endif %}</p>
+            <p class="text-muted" style="font-size: 1rem;">Plan Status: {{ Status | default('Developing') }}, Recipient: {% if plan.is_for_self %}Myself{% else %}{{ plan.answers_json.get("step_1",{}).get("care_recipient_name","For Someone you care for.")}}{% endif %}</p>
 
             {% include 'home/plan/progress_bar.html' %}
             

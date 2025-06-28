@@ -18,7 +18,9 @@ from app.s3_storage import upload_file_to_s3, generate_presigned_url, delete_obj
 @home_bp.route('/main')
 @login_required
 def main():
-    return render_template('home/home.html', title='Home')
+    # Get all plans belonging to the current user and order them by the most recently updated.
+    plans = Plan.query.filter_by(user_id=current_user.id).order_by(Plan.updated_at.desc()).all()
+    return render_template('home/home.html', plans=plans, title='Home')
 
 
 @home_bp.route('/plan/new', methods=['GET', 'POST'])
@@ -230,6 +232,39 @@ def share_plan_by_email(plan_id):
     else:
         return jsonify({'error': 'There was a problem sending the email. Try again later.'}), 500
     
+
+@home_bp.route('/plan/delete/<int:plan_id>', methods=['POST'])
+@login_required
+def delete_plan(plan_id):
+    """
+    Handles the deletion of a specific plan. This includes removing the
+    PDF report from S3 and the plan record from the database.
+    """
+    plan = Plan.query.filter_by(id=plan_id, user_id=current_user.id).first_or_404()
+    
+    try:
+        # Delete from S3: If the plan was completed and has a report file, delete it.
+        if plan.report_name:
+            if not delete_object_from_s3(plan.report_name):
+                # If S3 deletion fails, flash an error and halt
+                flash(f'Could not delete the plan "{plan.name}". Try again later.', 'warning')
+                return redirect(url_for('home.main'))
+        
+        # Delete from Database
+        db.session.delete(plan)
+        db.session.commit()
+
+        flash(f'Successfully deleted the plan: {plan.name}', 'success')
+        
+    except Exception as e:
+        # If anything goes wrong, roll back the transaction.
+        db.session.rollback()
+        print(f"Error deleting plan {plan_id}: {e}")
+        flash('An unexpected error occurred while attempting to delete the plan. Please try again.', 'danger')
+
+    # Always redirect back to the user's dashboard.
+    return redirect(url_for('home.main'))
+
 
 def generate_plan(plan_id):
     """Generates a disaster plan (pdf) based on the user's answers."""

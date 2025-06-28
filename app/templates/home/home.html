@@ -1,88 +1,248 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-1">
-
-    <div class="text-center">
-        <h1 class="display-5 logo-color">Welcome, {{ current_user.first_name }}!</h1>
-
-        <p class="lead text-muted">
-            In the event of a natural disaster, being prepared matters — and we’re here to guide you.
-        </p>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h2 class="mb-2 mb-md-0 logo-color">Welcome, {{ current_user.first_name }}!</h2>
+        <a href="{{ url_for('home.start_new_plan') }}" class="btn btn-brand-primary rounded-pill">
+            <i class="bi bi-plus-circle-fill"></i> Create New Plan
+        </a>
     </div>
 
-    <div class="text-center mb-5">
-        <div class="d-inline-flex flex-column flex-sm-row gap-3 justify-content-center">
-
-            <a href="{{ url_for('home.start_new_plan') }}" class="btn btn-brand-primary btn-responsive rounded-pill">
-                <i class="bi bi-plus-lg me-2"></i>Start a New Plan
-            </a>
-
-            <a href="#" class="btn btn-brand-outline btn-responsive rounded-pill">
-                <i class="bi bi-map me-2"></i>Explore Area Risk
-            </a>
-
+    <hr>
+    <div class="row g-3 align-items-center mb-3 filter-bar">
+        <div class="col-md-8">
+            <label for="plan-name-search" class="form-label fw-bold">Search by Plan Name:</label>
+            <input type="search" class="form-control" id="plan-name-search" placeholder="Enter name or keywords...">
+        </div>
+        <div class="col-md-4">
+            <label for="plan-for-filter" class="form-label fw-bold">Show Plans For:</label>
+            <select class="form-select" id="plan-for-filter">
+                <option value="all" selected>All</option>
+                <option value="self">Myself</option>
+                <option value="others">Others</option>
+            </select>
         </div>
     </div>
+    <h3 class="mt-4 mb-3">Your Disaster Plans</h3>
 
-    <ul class="nav nav-tabs nav-fill" id="pills-tab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="pills-pending-tab" data-bs-toggle="pill" data-bs-target="#pills-pending" type="button" role="tab" aria-controls="pills-pending" aria-selected="true">
-                <i class="bi bi-pencil-square me-2"></i>Pending Plans (2)
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="pills-completed-tab" data-bs-toggle="pill" data-bs-target="#pills-completed" type="button" role="tab" aria-controls="pills-completed" aria-selected="false">
-                <i class="bi bi-check-circle-fill me-2"></i>Completed Plans (1)
-            </button>
-        </li>
-    </ul>
+    {% if plans %}
+        {# Pre-filter plans into two separate lists for easier rendering #}
+        {% set in_progress_plans = [] %}
+        {% set completed_plans = [] %}
+        {% for plan in plans %}
+            {% if plan.is_complete %}
+                {% set _ = completed_plans.append(plan) %}
+            {% else %}
+                {% set _ = in_progress_plans.append(plan) %}
+            {% endif %}
+        {% endfor %}
 
-    <div class="tab-content shadow rounded-3" id="pills-tabContent">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs nav-fill" id="planTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="inprogress-tab" data-bs-toggle="tab" data-bs-target="#inprogress-pane" type="button" role="tab" aria-controls="inprogress-pane" aria-selected="true">
+                    In Progress <span id="inprogress-count-badge" class="badge bg-secondary rounded-pill">{{ in_progress_plans|length }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed-pane" type="button" role="tab" aria-controls="completed-pane" aria-selected="false">
+                    Completed <span id="completed-count-badge" class="badge bg-success rounded-pill">{{ completed_plans|length }}</span>
+                </button>
+            </li>
+        </ul>
 
-        <div class="tab-pane fade show active" id="pills-pending" role="tabpanel" aria-labelledby="pills-pending-tab">
-            <div class="list-group list-group-flush">
-                <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center p-3">
-                    <div>
-                        <h6 class="mb-1">Disaster Plan for John Doe</h6>
-                        <small class="text-muted">Started on: June 15, 2025</small>
-                    </div>
-                    <div class="mt-2 mt-md-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                            <i class="bi bi-arrow-right-circle"></i> Continue Plan
-                        </a>
-                    </div>
+        <!-- Tab panes -->
+        <div class="tab-content" id="planTabsContent">
+            <div class="tab-pane fade show active" id="inprogress-pane" role="tabpanel" aria-labelledby="inprogress-tab" tabindex="0">
+                <div class="list-group pt-3">
+                    {% if in_progress_plans %}
+                        {% for plan in in_progress_plans %}
+                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-2 border rounded-3 shadow-sm position-relative" data-plan-name="{{ plan.name|lower }}" data-is-for-self="{{ 'true' if plan.is_for_self else 'false' }}">
+                                <a href="{{ url_for('home.plan_step', plan_id=plan.id, step_num=plan.answers_json.get('last_step', 1)) }}" class="stretched-link"></a>
+
+                                <div class="d-flex flex-column flex-sm-row w-100 justify-content-sm-between">
+                                    <h5 class="mb-1 mb-sm-0 fw-bold text-brand-primary">{{ plan.name }}</h5>
+                                    <small class="text-muted">Last updated: {{ plan.updated_at.strftime('%b %d, %Y') if plan.updated_at else plan.created_at.strftime('%b %d, %Y') }}</small>
+                                </div>
+                            
+                                <div class="d-flex flex-column flex-sm-row w-100 justify-content-sm-between align-items-start align-items-sm-center mt-2">
+                                    <div class="mb-2 mb-sm-0">
+                                        <p class="mb-0">
+                                            Status: <span class="badge rounded-pill bg-secondary">In Progress</span>
+                                        </p>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger w-sm-auto" style="position: relative; z-index: 2;"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteConfirmationModal"
+                                            data-plan-id="{{ plan.id }}"
+                                            data-plan-name="{{ plan.name }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center p-4">You have no plans currently in progress.</p>
+                    {% endif %}
                 </div>
-                <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center p-3">
-                    <div>
-                        <h6 class="mb-1">Personal Home Plan</h6>
-                        <small class="text-muted">Started on: May 28, 2025</small>
-                    </div>
-                    <div class="mt-2 mt-md-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                            <i class="bi bi-arrow-right-circle"></i> Continue Plan
-                        </a>
-                    </div>
+            </div>
+            <div class="tab-pane fade" id="completed-pane" role="tabpanel" aria-labelledby="completed-tab" tabindex="0">
+                <div class="list-group pt-3">
+                    {% if completed_plans %}
+                        {% for plan in completed_plans %}
+                             <div class="list-group-item list-group-item-action flex-column align-items-start mb-2 border rounded-3 shadow-sm position-relative" data-plan-name="{{ plan.name|lower }}" data-is-for-self="{{ 'true' if plan.is_for_self else 'false' }}">
+                                <a href="{{ url_for('home.view_plan', plan_id=plan.id) }}" class="stretched-link"></a>
+                                <div class="d-flex flex-column flex-sm-row w-100 justify-content-sm-between">
+                                    <h5 class="mb-1 mb-sm-0 fw-bold text-brand-primary">{{ plan.name }}</h5>
+                                    <small class="text-muted">Last updated: {{ plan.updated_at.strftime('%b %d, %Y') }}</small>
+                                </div>
+                                <div class="d-flex flex-column flex-sm-row w-100 justify-content-sm-between align-items-start align-items-sm-center mt-2">
+                                    <div class="mb-2 mb-sm-0">
+                                        <p class="mb-0">
+                                            Status: <span class="badge rounded-pill bg-success">Complete</span>
+                                        </p>
+                                    </div>
+                                     <button type="button" class="btn btn-sm btn-outline-danger w-sm-auto" style="position: relative; z-index: 2;"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteConfirmationModal"
+                                            data-plan-id="{{ plan.id }}"
+                                            data-plan-name="{{ plan.name }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center p-4">You have not completed any plans yet.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <div class="tab-pane fade" id="pills-completed" role="tabpanel" aria-labelledby="pills-completed-tab">
-             <div class="list-group list-group-flush">
-                <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center p-3">
-                    <div>
-                        <h6 class="mb-1">Finalized Plan for Mary Smith</h6>
-                        <small class="text-muted">Completed on: April 10, 2025</small>
-                    </div>
-                    <div class="mt-2 mt-md-0">
-                        <a href="#" target="_blank" class="btn btn-outline-success btn-sm rounded-pill px-3">
-                            <i class="bi bi-file-earmark-arrow-down-fill"></i> View PDF
-                        </a>
-                    </div>
-                </div>
+    {% else %}
+        <div class="text-center p-5 border rounded-3 bg-light">
+            <p class="lead">You haven't created any plans yet.</p>
+            <p>Take the first step towards disaster preparedness today.</p>
+            <a href="{{ url_for('home.start_new_plan') }}" class="btn btn-brand-primary btn-lg mt-2">Start Your First Plan</a>
+        </div>
+    {% endif %}
+
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title logo-color" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the plan "<strong id="planNameToDelete"></strong>"? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deletePlanForm" method="POST" action="">
+                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger">Delete Plan</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
 
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteModal = document.getElementById('deleteConfirmationModal');
+    if (deleteModal) {
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            const button = event.relatedTarget;
+            
+            // Extract info from data-* attributes
+            const planId = button.getAttribute('data-plan-id');
+            const planName = button.getAttribute('data-plan-name');
+
+            // Update the modal's content
+            const planNameElement = deleteModal.querySelector('#planNameToDelete');
+            const deleteForm = deleteModal.querySelector('#deletePlanForm');
+
+            if (planNameElement && deleteForm) {
+                planNameElement.textContent = planName;
+                // Dynamically create the correct action URL for the form
+                deleteForm.action = `plan/delete/${planId}`;
+            }
+        });
+    }
+
+    // Search & Filter logic
+    const forWhomFilter = document.getElementById('plan-for-filter');
+    const nameSearchInput = document.getElementById('plan-name-search');
+    const allPlanItems = document.querySelectorAll('.list-group-item');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    const inProgressBadge = document.getElementById('inprogress-count-badge');
+    const completedBadge = document.getElementById('completed-count-badge');
+
+    function filterAndSortPlans() {
+        const forWhomValue = forWhomFilter.value;
+        const searchTerm = nameSearchInput.value.toLowerCase();
+
+        allPlanItems.forEach(item => {
+            const isForSelf = item.dataset.isForSelf === 'true';
+            const planName = item.dataset.planName;
+            const forWhomMatch = (forWhomValue === 'all') || (forWhomValue === 'self' && isForSelf) || (forWhomValue === 'others' && !isForSelf);
+
+            // Split the search term into individual keywords and remove any empty ones
+            const keywords = searchTerm.split(' ').filter(k => k);
+            // Check if EVERY keyword is included in the plan name
+            const nameMatch = keywords.every(keyword => planName.includes(keyword));
+
+            if (forWhomMatch && nameMatch) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        updateEmptyTabMessages();
+        updateTabCounts(); // Update the counts after filtering
+    }
+
+    function updateEmptyTabMessages() {
+        tabPanes.forEach(pane => {
+            const messageEl = pane.querySelector('.text-center.p-4');
+            const visibleItems = pane.querySelectorAll('.list-group-item:not([style*="display: none"])');
+            if (messageEl) {
+                messageEl.style.display = visibleItems.length === 0 ? 'block' : 'none';
+            }
+        });
+    }
+
+    function updateTabCounts() {
+        const visibleInProgress = document.querySelectorAll('#inprogress-pane .list-group-item:not([style*="display: none"])');
+        if (inProgressBadge) {
+            inProgressBadge.textContent = visibleInProgress.length;
+        }
+
+        const visibleCompleted = document.querySelectorAll('#completed-pane .list-group-item:not([style*="display: none"])');
+        if (completedBadge) {
+            completedBadge.textContent = visibleCompleted.length;
+        }
+    }
+
+    // Attach event listeners
+    if (forWhomFilter && nameSearchInput) {
+        forWhomFilter.addEventListener('change', filterAndSortPlans);
+        nameSearchInput.addEventListener('input', filterAndSortPlans);
+    }
+
+    // Initial check
+    updateEmptyTabMessages();
+});
+
+</script>
+{% endblock scripts %}

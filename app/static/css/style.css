@@ -518,3 +518,13 @@ footer a {
     transform: scale(1.0);
   }
 }
+
+/* Home search and filter bars */
+.filter-bar .form-control:focus,
+.filter-bar .form-select:focus {
+  box-shadow: 0 0 0 0.25rem rgba(58, 116, 168, 0.25); /* A glow effect using a transparent version of your theme color */
+}
+
+.filter-bar .form-control, .filter-bar .form-select {
+  border-color: var(--secondary-color);
+}
