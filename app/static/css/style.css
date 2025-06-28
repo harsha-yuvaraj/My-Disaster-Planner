@@ -455,3 +455,66 @@ footer a {
         display: none;
     }
 }
+
+/* --- Loader Overlay Styles --- */
+/* The full-screen translucent overlay */
+#loader-overlay {
+    position: fixed; /* Position relative to the viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Black background with 60% opacity */
+    z-index: 9999; /* Ensure it's on top of all other content */
+
+    /* Use flexbox to center the loader animation within the overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Start with the overlay hidden */
+    visibility: hidden;
+    opacity: 0;
+
+    /* Add a smooth transition for fading in */
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+/* Class to make the overlay visible */
+#loader-overlay.is-active {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Styling for the container of the dots */
+.loader {
+    display: flex;
+}
+
+/* Styling for each of the six dots */
+.loader-dot {
+    width: 16px; /* Made dots slightly larger for better visibility */
+    height: 16px;
+    background-color: #ffffff; /* White dots are perfect for a dark overlay */
+    border-radius: 50%;
+    margin: 0 6px;
+    animation: dot-bounce 1.4s infinite ease-in-out both;
+}
+
+/* Staggering the animation delay for each dot to create the rotating effect */
+.loader-dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.loader-dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes dot-bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1.0);
+  }
+}

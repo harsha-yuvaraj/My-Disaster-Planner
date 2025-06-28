@@ -1,0 +1,113 @@
+    /* --- Main Layout --- */
+    body {
+        overflow: hidden;
+    }
+
+    .pdf-viewer-container {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 56px); 
+        width: 100%;
+        background-color: #f0f2f5;
+    }
+
+    /* --- Toolbar Styles --- */
+    .pdf-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        background-color: #ffffff;
+        border-bottom: 1px solid #dee2e6;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        z-index: 10;
+    }
+
+    .pdf-toolbar .btn {
+        margin: 0.25rem;
+    }
+    
+    .pdf-toolbar .page-info {
+        margin: 0 1rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    /* --- Main Viewer Area --- */
+    .pdf-viewer-area {
+        flex-grow: 1;
+        overflow: auto; 
+        text-align: center;
+        padding: 1.5rem;
+        position: relative;
+    }
+
+    .pdf-viewer-area.grab {
+        cursor: grab;
+    }
+    .pdf-viewer-area.grabbing {
+        cursor: grabbing;
+    }
+    
+    .pdf-page-canvas {
+        display: block;
+        margin: 0 auto 1.5rem auto;
+        border: 1px solid #ccc;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 4px;
+        pointer-events: none;
+    }
+
+    /* --- Loading Spinner --- */
+    #loading-spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #0d6efd;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1.2s linear infinite;
+        z-index: 20; /* Ensure it's on top */
+    }
+
+    @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+/* --- Tom Select Customization --- */
+.ts-control {
+    border-radius: var(--bs-border-radius-pill) !important;
+    padding: 0.5rem 1rem !important;
+}
+
+.ts-control, .ts-control input {
+    font-size: 1rem;
+}
+
+.ts-control.focus {
+    border-color: #3A74A8; /* App primary color */
+    box-shadow: 0 0 0 0.2rem rgba(58, 116, 168, 0.25);
+}
+
+.ts-dropdown .active {
+    background-color: #3A74A8; /* App primary color */
+}
+
+/* --- Modal Styling --- */
+#shareEmailModal .modal-header {
+    border-bottom: 1px solid #dee2e6;
+}
+
+#shareEmailModal .modal-footer {
+    border-top: 1px solid #dee2e6;
+}
+
+/* Ensure form has some space */
+#share-email-form {
+    padding-top: 0.5rem;
+}

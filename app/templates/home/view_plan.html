@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/view_plan.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.css" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script src="{{ url_for('static', filename='js/view_plan.js') }}" type="module" defer></script>
+{% endblock scripts %}
+
+{% block content %}
+<div class="pdf-viewer-container">
+    <!-- Toolbar for PDF controls -->
+    <div class="pdf-toolbar">
+        <h5 class="me-auto my-2 d-none d-lg-block">{{ plan.name }}</h5>
+        
+        <div class="page-info">
+            <span>Page <span id="page-num">--</span> of <span id="page-count">--</span></span>
+        </div>
+        
+        <div class="mx-lg-3 mx-1"></div> <!-- Spacer -->
+
+        <button id="zoom-out" class="btn btn-brand-outline" title="Zoom Out">
+            <i class="bi bi-zoom-out"></i>
+        </button>
+        <button id="zoom-in" class="btn btn-brand-outline" title="Zoom In">
+            <i class="bi bi-zoom-in"></i>
+        </button>
+        
+        <button id="fit-to-page" class="btn btn-brand-outline" title="Fit to Page">
+            <i class="bi bi-arrows-angle-contract"></i>
+        </button>
+        <button id="fit-to-width" class="btn btn-brand-outline" title="Fit to Width">
+            <i class="bi bi-arrows-angle-expand"></i>
+        </button>
+
+        <a id="download-btn" href="{{ download_url | safe }}" class="btn btn-brand-primary rounded-pill ms-2" title="Download PDF">
+            <i class="bi bi-download"></i> <span class="d-none d-md-inline">Download</span>
+        </a>
+
+        <button id="share-email-btn" class="btn btn-brand-outline rounded-pill ms-2" title="Share via Email">
+            <i class="bi bi-envelope"></i> <span class="d-none d-md-inline">Share</span>
+        </button>
+
+        <a href="{{ view_url | safe }}" target="_blank" class="btn btn-brand-outline rounded-pill ms-2" title="Open in New Tab">
+            <span class="d-none d-md-inline">Open in New Tab</span> <i class="bi bi-box-arrow-up-right"></i>
+        </a>
+    </div>
+
+    <!-- Main viewer area where all page canvases will be appended -->
+    <div id="viewer-area" class="pdf-viewer-area grab" data-pdf-url="{{ view_url | safe }}">
+        <div id="loading-spinner" style="display: none;"></div>
+        <!-- Canvases will be dynamically created here by JavaScript -->
+    </div>
+</div>
+
+<div class="modal fade" id="shareEmailModal" tabindex="-1" aria-labelledby="shareEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="shareEmailModalLabel">Share Plan via Email</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Enter email addresses below. Press enter after each one.</p>
+                <form id="share-email-form" data-share-url="{{ url_for('home.share_plan_by_email', plan_id=plan.id) }}">
+                    <input type="hidden" id="csrf_token" name="_csrf_token" value="{{ csrf_token() }}">
+
+                    <input id="email-share-input" name="emails" placeholder="name@example.com..." autocomplete="off">
+
+                    <div id="email-limit-message" class="text-danger small mt-2" style="display: none;">You have reached the limit of 5 emails.</div>
+                
+                    <input type="hidden" id="plan-id-holder" value="{{ plan.id }}">
+
+                    <div id="share-error-message" class="text-danger mt-2"></div>
+                    <div id="share-success-message" class="text-success mt-2"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-brand-primary" id="send-email-submit-btn">
+                    <span id="send-btn-text">Send Email</span>
+                    <span id="send-btn-spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block footer %}
+    {# This block is intentionally left empty to hide the footer on this page #}
+{% endblock footer %}

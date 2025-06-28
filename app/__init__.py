@@ -4,8 +4,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_seasurf import SeaSurf
 from flask_migrate import Migrate
 from flask_login import LoginManager
-import json
+from mailjet_rest import Client as MailjetClient
 from config import Config
+import json
+import boto3
+
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -22,6 +25,20 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     csrf.init_app(app)  
     login_manager.init_app(app)
+
+    # --- Initialize Boto3 S3 Client (Eager Loading) --- 
+    try:
+        region = app.config['AWS_DEFAULT_REGION']
+        app.s3_client = boto3.client('s3', region_name=region)
+    except Exception as e:
+        print(f"Failed to initialize Boto3 S3 client: {e}")
+        app.s3_client = None 
+
+    try:
+        app.mailjet = MailjetClient(auth=(app.config['MAILJET_API_KEY'], app.config['MAILJET_API_SECRET']), version='v3.1')
+    except Exception as e:
+        print(f"Failed to initialize Mailjet client: {e}")
+        app.mailjet = None 
 
     try:
         with open(app.config['FLORIDA_CEMW_JSON_PATH']) as f:
@@ -46,5 +63,7 @@ def create_app(config_class=Config):
     # Import models here to ensure they are known to Flask-Migrate
     # and for the shell context processor in run.py
     from app import models
+
+    print("My Disaster Planner is ready and up...")
 
     return app

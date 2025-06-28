@@ -114,4 +114,4 @@ class Plan(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())
 
     def __repr__(self):
-        return f'<Plan id={self.id} name="{self.plan_name}" status={self.status}>'
+        return f'<Plan id={self.id} name="{self.name}" status={self.is_complete}>'

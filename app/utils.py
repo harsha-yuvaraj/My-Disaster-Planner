@@ -1,22 +1,13 @@
-from mailjet_rest import Client
-import re
+import re, base64
 from flask import current_app, render_template
+from flask_login import current_user
+from botocore.exceptions import ClientError
+
 
 def send_password_reset_email(user):
     """Sends the password reset email to a user via Mailjet."""
     token = user.get_reset_token() 
 
-    api_key = current_app.config['MAILJET_API_KEY']
-    api_secret = current_app.config['MAILJET_API_SECRET']
-    
-    # Check if credentials are set
-    if not api_key or not api_secret:
-        print("Error: Mailjet API keys are not configured.")
-        return None
-
-    # Initialize the Mailjet client 
-    mailjet = Client(auth=(api_key, api_secret), version='v3.1')
-    
     # Render the HTML content for the email body
     html_content = render_template('auth/emailResetPassword.html', user=user, token=token)
 
@@ -26,7 +17,7 @@ def send_password_reset_email(user):
         {
           "From": {
             "Email": current_app.config['DEFAULT_MAIL_SENDER'],
-            "Name": current_app.config.get('MAIL_FROM_NAME', "My Disaster Planner")
+            "Name": current_app.config.get('MAIL_FROM_NAME')
           },
           "To": [
             {
@@ -42,7 +33,7 @@ def send_password_reset_email(user):
     
     try:
         # Send the request to Mailjet's API
-        result = mailjet.send.create(data=data)
+        result = current_app.mailjet.send.create(data=data)
         return result.status_code
     
     except Exception as e:
@@ -102,5 +93,58 @@ def parse_plan_response(form_data, step_num):
     return parsed_data
 
 
+def send_plan_to_recipients(recipient_emails, plan_pdf_bytes, plan_name):
+    """
+    Emails a generated plan PDF to a list of recipients.
 
+    Args:
+        recipient_emails (list): A list of email addresses.
+        plan_pdf_bytes (bytes): The raw byte content of the PDF.
+        plan_name (str): The name of the plan for the email subject.
 
+    Returns:
+        bool: True if the Mailjet API call was successful, False otherwise.
+    """
+
+    if not plan_pdf_bytes:
+        print("Error: PDF content is empty, cannot send email to recipients.")
+        return False
+    
+    sender_email = current_app.config['DEFAULT_MAIL_SENDER']
+    sharer_name = current_user.first_name + " " + current_user.last_name
+    html_content = render_template('home/plan/email_plan.html', sharer_name=sharer_name, sharer_email=current_user.email)
+
+    try:
+        # Encode the provided PDF byte content for the attachment
+        base64_content = base64.b64encode(plan_pdf_bytes).decode('utf-8')
+
+        # Build the list of message objects for the Mailjet API call
+        messages = []
+        for email in recipient_emails:
+            message = {
+                "From": {"Email": sender_email, "Name": current_app.config.get('MAIL_FROM_NAME')},
+                "To": [{"Email": email}],
+                "Subject": f"Disaster Preparedness Plan: {plan_name} - Shared by {sharer_name}",
+                "HTMLPart": html_content,
+                "Attachments": [{
+                    "ContentType": "application/pdf",
+                    "Filename": f"{plan_name}",
+                    "Base64Content": base64_content
+                }]
+            }
+            messages.append(message)
+        
+        # Send the email to all recipients in a single API call
+        result = current_app.mailjet.send.create(data={'Messages': messages})
+
+        # Check the overall status.
+        if 200 <= result.status_code < 300:
+            return True
+        else:
+            print(f"Mailjet API Error: {result.status_code} - {result.json()}")
+            return False
+
+    except Exception as e:
+        # This will catch other errors, like Mailjet connection issues
+        print(f"An error occurred while emailing plan to given recipients : {e}")
+        return False

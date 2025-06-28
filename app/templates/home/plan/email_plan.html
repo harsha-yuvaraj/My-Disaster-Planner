@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Your Password</title>
+    <title>A Disaster Preparedness Plan Has Been Shared With You</title>
     <style>
         body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
         table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
@@ -21,46 +21,33 @@
 </head>
 <body style="background-color: #F8F9FA; margin: 0 !important; padding: 0 !important;">
 
+    <!-- Main Table -->
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <!-- Logo Section -->
         <tr>
             <td align="center" style="padding: 20px 0;">
                 <h1 style="font-size: 28px; font-weight: bold; font-family: Arial, sans-serif; color: #333333; margin: 0;">My Disaster Planner</h1>
             </td>
         </tr>
+        <!-- Main Content Section -->
         <tr>
             <td align="center" style="padding: 0 10px;">
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                     <tr>
                         <td bgcolor="#ffffff" align="left" style="padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); font-family: Arial, sans-serif; font-size: 16px; line-height: 24px; color: #555555;">
                             
-                            <h2 style="font-size: 22px; font-weight: bold; color: #333333; margin: 0 0 20px;">Password Reset Request</h2>
+                            <h2 style="font-size: 22px; font-weight: bold; color: #333333; margin: 0 0 20px;">A Disaster Preparedness Plan Has Been Shared With You</h2>
                             
-                            <p style="margin: 0 0 25px;">Hello {{ user.first_name }},</p>
-
                             <p style="margin: 0 0 25px;">
-                                We received a request to reset the password for your account. If this was you, please use the button below to set a new password. For your security, this link will expire in 15 minutes.
+                                <strong>{{ sharer_name }} ({{ sharer_email }})</strong> has used My Disaster Planner to share this preparedness plan with you.
                             </p>
 
-                            <table border="0" cellspacing="0" cellpadding="0" width="100%">
-                                <tr>
-                                    <td align="center">
-                                        <table border="0" cellspacing="0" cellpadding="0">
-                                            <tr>
-                                                <td align="center" style="border-radius: 5px;" bgcolor="#3A74A8">
-                                                    <a href="{{ url_for('auth.reset_password', token=token, _external=True) }}" target="_blank" style="font-size: 16px; font-family: Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 5px; padding: 15px 25px; border: 1px solid #3A74A8; display: inline-block; font-weight: bold;">Reset Your Password</a>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <p style="margin: 30px 0 15px;">
-                                If you did not make this request, you can safely ignore this email. Your password will not be changed.
+                            <p style="margin: 0 0 25px;">
+                                The attached PDF may contain information relevant to you or someone you care about. It is recommended that you review the contents and store it in a secure location.
                             </p>
 
                             <p style="margin: 0;">
-                                Thank you,<br>
+                                Stay safe,<br>
                                 My Disaster Planner Team
                             </p>
                         </td>
@@ -68,12 +55,13 @@
                 </table>
             </td>
         </tr>
+        <!-- Footer Section -->
         <tr>
             <td align="center" style="padding: 20px;">
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                     <tr>
                         <td align="center" style="font-family: Arial, sans-serif; font-size: 12px; color: #888888;">
-                            <p style="margin: 10px 0;">You received this email because a password reset was requested for your account on <a href="https://mydisasterplanner.online/" target="_blank" style="color: #3A74A8;">My Disaster Planner</a>.</p>
+                            <p style="margin: 10px 0;">You received this email because a user shared a plan with your email address via <a href="https://mydisasterplanner.online/" target="_blank" style="color: #3A74A8;">My Disaster Planner</a>.</p>
                         </td>
                     </tr>
                 </table>
