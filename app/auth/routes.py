@@ -1,5 +1,5 @@
 # app/auth/routes.py
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, current_user
 from app import db
 from app.auth import auth_bp
@@ -115,6 +115,7 @@ def reset_password(token):
 
 @auth_bp.route('/logout')
 def logout():
+    session.clear()
     logout_user()
     return redirect(url_for('index'))
 

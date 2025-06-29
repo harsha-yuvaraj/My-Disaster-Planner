@@ -6,6 +6,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     SECRET_KEY = config('SECRET_KEY') 
+    SESSION_TYPE = config('SESSION_TYPE')
     SQLALCHEMY_DATABASE_URI = config('DATABASE_URL')
     MAILJET_API_KEY = config('MAILJET_API_KEY')
     MAILJET_API_SECRET = config('MAILJET_API_SECRET')
@@ -16,6 +17,8 @@ class Config:
     GOOGLE_GEOCODE_API_URL = config('GOOGLE_GEOCODE_API_URL')
     GOOGLE_ROUTES_API_URL = config('GOOGLE_ROUTES_API_URL')
     FEMA_NFHL_IDENTIFY_URL = config('FEMA_NFHL_IDENTIFY_URL')
+    OPENAI_API_KEY = config('OPENAI_API_KEY')
+    LLM_MODEL = config('LLM_MODEL')
     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
     AWS_DEFAULT_REGION = config('AWS_DEFAULT_REGION', default='us-east-1')

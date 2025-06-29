@@ -141,3 +141,8 @@ cython_debug/
 # Flask secret files
 secret_key.txt
 .env
+
+# RAG files
+index_store/
+
+flask_session/

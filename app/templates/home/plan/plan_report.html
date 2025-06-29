@@ -277,7 +277,7 @@
             {% endif %}
             <hr>
             <h3 class="text-center">Backup Destination</h3>
-            <p><strong>Type: </strong>{{plan_data.get('backup_destination_typee', 'Unknown')}}</p>
+            <p><strong>Type: </strong>{{plan_data.get('backup_destination_type', 'Unknown')}}</p>
             <p><strong>Address: </strong>{% if plan_data.get('backup_knows_address') == 'yes' %} {{plan_data.get('backup_address', 'Unknown')}} {% else %} Did not mention. {% endif %}</p>
             <p><strong>Other Details: </strong>{{plan_data.get('backup_other_details','None mentioned')}}</p> 
             {% if evac_travel_info.get('backup_trip',{}) and evac_travel_info.get('backup_trip',{}).get('error', "No")=="No" and evac_travel_info.get('backup_trip',{}).get('distance_miles', "")!="N/A" %}

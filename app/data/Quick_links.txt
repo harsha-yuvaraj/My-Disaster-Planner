@@ -1,0 +1,44 @@
+Here is a summary of the resources available in the "Quick Links" menu of the My Disaster Planner application.
+
+Florida-Specific Resources:
+	- Know Your Evacuation Zone (FL): https://www.floridadisaster.org/knowyourzone/
+	- Find County EM Contacts (FL): https://www.floridadisaster.org/planprepare/counties/
+
+U.S. Government Resources:
+	-Find Your Flood Zone (FEMA): https://msc.fema.gov/portal/home
+	-FEMA Main Site: https://www.fema.gov/
+
+Guides for Older Adults & Caregivers
+	-Disaster Prep for Older Adults: https://www.firstcontact.org/disaster-preparedness-for-older-adults-and-caregivers
+
+_____________________________________________________________________________________________________________________________________________________________
+
+
+Saffir-Simpson Hurricane Wind Scale:
+
+1 to 5 rating system that categorizes hurricanes based on their sustained wind speeds. The primary purpose of the scale is to estimate potential property damage.
+
+Hurricane Categories & Potential Damage
+
+Category 1
+Sustained Winds: 74-95 mph
+Damage: "Very dangerous winds will produce some damage." Expect damage to roofs, shingles, and siding of well-constructed homes. Large tree branches will snap.
+
+Category 2
+Sustained Winds: 96-110 mph
+Damage: "Extremely dangerous winds will cause extensive damage." Well-constructed homes could see major roof and siding damage. Many trees will be uprooted, and a near-total power loss is expected.
+
+Category 3 (Major Hurricane)
+Sustained Winds: 111-129 mph
+Damage: "Devastating damage will occur." Well-built homes may have major damage, including the removal of roof decking. Electricity and water will be unavailable for several days to weeks.
+
+Category 4 (Major Hurricane)
+Sustained Winds: 130-156 mph
+Damage: "Catastrophic damage will occur." Homes can sustain severe damage, including the loss of the roof and some exterior walls. Power outages will last for weeks to possibly months.
+
+Category 5 (Major Hurricane)
+Sustained Winds: 157 mph or higher
+Damage: "Catastrophic damage will occur." A high percentage of framed homes will be destroyed. The area will be isolated by fallen trees and power poles, and most of it will be uninhabitable for weeks or months.
+
+Source: National Weather Service / National Hurricane Center
+

@@ -2,5 +2,5 @@
 # Flask specific environment variables.
 
 FLASK_APP=run.py
-FLASK_ENV=development 
+FLASK_ENV=production 
 # Set to 'production' for production 

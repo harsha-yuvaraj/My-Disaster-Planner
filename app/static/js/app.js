@@ -13,4 +13,15 @@ function autoDismissAlerts(selector, timeout) {
 document.addEventListener('DOMContentLoaded', () => {
   // Call our function to add timeouts to the flashed messages
   autoDismissAlerts('.alert-dismissible', 10000);
+
+  // Clear Chatbot History on Logout
+  const logoutBtn = document.getElementById('logout-btn');
+  const CHAT_HISTORY_KEY = 'chatbot_history'; // Ensure this key matches the one in chatbot.js
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function() {
+      // When the logout button is clicked, remove the chat history from sessionStorage.
+      sessionStorage.removeItem(CHAT_HISTORY_KEY);
+    });
+  }
 });

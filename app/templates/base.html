@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
     {% block styles %} {% endblock %}
 
     {% if title %}
@@ -42,6 +43,12 @@
                     <li class="nav-item">
                         <a class="nav-link {{ 'active' if request.endpoint == 'home.main' else '' }}" href="{{ url_for('home.main') }}">  
                             <i class="bi bi-shield-fill-check"></i> Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="open-chatbot-btn">  
+                            <i class="bi bi-chat-dots-fill"></i> AI Chatbot
                         </a>
                     </li>
 
@@ -87,7 +94,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">
+                        <a class="nav-link text-danger" id="logout-btn" href="{{ url_for('auth.logout') }}">
                             <i class="bi bi-box-arrow-right"></i> Logout
                         </a>
                     </li>
@@ -207,8 +214,12 @@
 
     {% include 'home/info_modules/hurricane_winds_module.html' %}
 
+    {% include 'chatbot/chatbot.html' %}
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}" defer></script>
 
     {% block scripts %} {% endblock %}
 

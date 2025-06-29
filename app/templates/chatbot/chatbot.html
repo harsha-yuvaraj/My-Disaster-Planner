@@ -1,0 +1,20 @@
+<div id="chatbot-modal-overlay">
+    <div class="chatbot-window">
+        <div class="chatbot-header">
+            <h5>AI Disaster Prep Assistant</h5>
+            <button class="close-btn" id="close-chatbot-btn">&times;</button>
+        </div>
+        <div class="chatbot-messages" id="chatbot-messages">
+            <!-- Messages will be dynamically added here by JavaScript -->
+        </div>
+        <div class="chatbot-input-area">
+            <form class="chatbot-input-form" id="chatbot-form">
+                <input type="hidden" name="_csrf_token" id="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" id="chatbot-input" placeholder="Ask a question..." autocomplete="off">
+                <button type="submit" id="chatbot-send-btn" title="Send Message">
+                    <i class="bi bi-arrow-up-short"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
