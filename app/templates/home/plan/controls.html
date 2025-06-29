@@ -1,11 +1,18 @@
 <hr class="my-4">
-<div class="d-flex justify-content-end align-items-center">
+<div class="d-flex justify-content-end align-items-center flex-wrap flex-md-nowrap">
+    {% if current_step > 1 %}
+    <a href="{{url_for('home.plan_step', plan_id=plan.id, step_num=current_step-1)}}" 
+       class="btn btn-brand-outline btn-responsive rounded-pill me-auto mb-1">
+        <i class="bi-chevron-left me-2"></i> Back
+    </a>
+    {% endif %}
+
     <button type="submit" name="save_and_exit" value="true"
-        class="btn btn-outline-danger btn-responsive rounded-pill me-2" formnovalidate>
+        class="btn btn-outline-danger btn-responsive rounded-pill me-2 mb-1" formnovalidate>
         Save and Exit
     </button>
 
-    <button type="submit" class="btn btn-brand-primary btn-responsive rounded-pill mx-2">
+    <button type="submit" class="btn btn-brand-primary btn-responsive rounded-pill mx-2 mb-1">
         Save and Continue <i class="bi-chevron-right ms-1"></i>
     </button>
 </div>

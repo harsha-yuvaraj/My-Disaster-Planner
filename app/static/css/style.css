@@ -528,3 +528,25 @@ footer a {
 .filter-bar .form-control, .filter-bar .form-select {
   border-color: var(--secondary-color);
 }
+
+/* Quick Links */
+.dropdown-toggle-left {
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse; /* This reverses the order of text and arrow */
+    justify-content: flex-end; 
+}
+
+/* Adjust its margin to create space between it and the text. */
+.dropdown-toggle-left::after {
+    margin-left: 0; /* Remove the default left margin */
+    margin-right: 0.4em; /* Add a new margin on the right */
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: rgba(58, 116, 168, 0.1); /* Light tint of your #3A74A8 blue */
+}
+
+.dropdown-menu .dropdown-item i {
+    color: var(--primary-color);
+}

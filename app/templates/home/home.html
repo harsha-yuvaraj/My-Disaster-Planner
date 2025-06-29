@@ -103,13 +103,22 @@
                                             Status: <span class="badge rounded-pill bg-success">Complete</span>
                                         </p>
                                     </div>
-                                     <button type="button" class="btn btn-sm btn-outline-danger w-sm-auto" style="position: relative; z-index: 2;"
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#deleteConfirmationModal"
-                                            data-plan-id="{{ plan.id }}"
-                                            data-plan-name="{{ plan.name }}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                                    <div class="d-flex align-items-center gap-2" style="position: relative; z-index: 2;">
+                                        <button type="button" class="btn btn-sm btn-outline-warning" title="Edit Plan"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editConfirmationModal"
+                                                data-plan-id="{{ plan.id }}"
+                                                data-plan-name="{{ plan.name }}">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteConfirmationModal"
+                                                data-plan-id="{{ plan.id }}"
+                                                data-plan-name="{{ plan.name }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         {% endfor %}
@@ -151,6 +160,29 @@
         </div>
     </div>
 </div>
+
+<!-- Edit Confirmation Modal -->
+<div class="modal fade" id="editConfirmationModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title logo-color" id="editModalLabel">Reopen Plan for Editing?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This will mark the plan "<strong id="planNameToEdit"></strong>" as <b>In Progress</b> and allow you to edit it.</p>
+                <p>Are you sure you want to continue?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="editPlanForm" method="POST" action="">
+                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-warning">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 
@@ -175,6 +207,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 planNameElement.textContent = planName;
                 // Dynamically create the correct action URL for the form
                 deleteForm.action = `plan/delete/${planId}`;
+            }
+        });
+    }
+
+    // edit confirmation modal
+    const editModal = document.getElementById('editConfirmationModal');
+    if (editModal) {
+        editModal.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            const button = event.relatedTarget;
+            
+            // Extract info from data-* attributes
+            const planId = button.getAttribute('data-plan-id');
+            const planName = button.getAttribute('data-plan-name');
+        
+            // Update the modal's content
+            const planNameElement = editModal.querySelector('#planNameToEdit');
+            const editForm = editModal.querySelector('#editPlanForm');
+        
+            if (planNameElement && editForm) {
+                planNameElement.textContent = planName;
+                // Dynamically create the correct action URL for the form
+                editForm.action = `plan/edit/${planId}`; 
             }
         });
     }

@@ -56,24 +56,29 @@ def plan_step(plan_id, step_num):
         return redirect(url_for('home.main'))
 
     if step_num == 2:
-        if 'flood_risk' not in plan.answers_json:
-            answers = plan.answers_json or {}
-            # If the plan is for someone else, we need to get their address
-            if not plan.is_for_self:
-                data = answers.get('step_1', {})
-                address = data.get('care_recipient_address', '') + ", " +data.get('care_recipient_city', '') + ", " + data.get('care_recipient_state', '') + " " + data.get('care_recipient_zip', '') + ", USA"
-            else:
-                address = current_user.street_address + ", " + current_user.city + ", " + current_user.state + " " + current_user.zip_code + ", USA"
-            
-            # Get flood risk data for the address
-            answers['flood_risk'] = get_flood_risk_by_address(address)
-            plan.answers_json = answers
-            flag_modified(plan, 'answers_json') 
-            db.session.commit()
+        answers = plan.answers_json or {}
+        # If the plan is for someone else, we need to get their address
+        if not plan.is_for_self:
+            data = answers.get('step_1', {})
+            address = data.get('care_recipient_address', '') + ", " +data.get('care_recipient_city', '') + ", " + data.get('care_recipient_state', '') + " " + data.get('care_recipient_zip', '') + ", USA"
+        else:
+            address = current_user.street_address + ", " + current_user.city + ", " + current_user.state + " " + current_user.zip_code + ", USA"
+        
+        # Get flood risk data for the address
+        answers['flood_risk'] = get_flood_risk_by_address(address)
+        plan.answers_json = answers
+        flag_modified(plan, 'answers_json') 
+        db.session.commit()
     
-    if step_num == 3:
+    elif step_num == 3:
         if (plan.is_for_self and current_user.state == 'FL') or ((not plan.is_for_self) and plan.answers_json.get('step_1', {}).get('care_recipient_state', '').strip() == 'FL'):
             fl_cemw_data = current_app.config['FLORIDA_CEMW']
+    
+    elif step_num == 4:
+        if not plan.answers_json.get('step_3', ''):
+            flash(f'Please complete {all_steps[2]} section first.', 'warning')
+            return redirect(url_for('home.plan_step', plan_id=plan.id, step_num=step_num-1))
+    
 
     if step_num == TOTAL_PLAN_STEPS and not plan.answers_json.get('evacuate_travel_info', {}):
         step_key = f"step_{step_num-1}"
@@ -264,6 +269,25 @@ def delete_plan(plan_id):
 
     # Always redirect back to the user's dashboard.
     return redirect(url_for('home.main'))
+
+
+@home_bp.route('/plan/edit/<int:plan_id>', methods=['POST'])
+@login_required
+def edit_plan(plan_id):
+    plan = Plan.query.filter_by(id=plan_id, user_id=current_user.id).first_or_404()
+
+    if not plan.is_complete:
+        flash('Invalid Action.', 'danger')
+        redirect(url_for('home.main'))
+
+    plan.is_complete = False
+    answers = plan.answers_json or {} 
+    answers["last_step"] = 1  # revert back to step 1
+    plan.answers_json = answers
+    flag_modified(plan, 'answers_json') 
+    db.session.commit()
+    
+    return redirect(url_for('home.plan_step', plan_id=plan.id, step_num=1))
 
 
 def generate_plan(plan_id):
