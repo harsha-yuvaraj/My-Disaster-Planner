@@ -210,7 +210,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (history.length > 0) {
             history.forEach(msg => addMessage(msg.text, msg.type));
         } else {
-            const welcomeText = "Hello! I'm your AI assistant, powered by Google's Gemini. I can help you with questions about disaster preparedness, especially for Florida hurricanes. How can I assist you today?";
+            const welcomeText = `
+Welcome to My Disaster Planner! I am your AI assistant, here to guide you and offer helpful information and advice for an emergency or disaster preparedness.
+
+To get started, you can ask me things like:
+- **"What should I put in a emergency go-kit?"**
+- **"How do I find my evacuation zone in Florida?"**
+- **"What are some tips for making a plan for an older adult with dementia?"**
+
+How can I assist you today?
+            `;
+
             addMessage(welcomeText, 'bot');
         }
     }

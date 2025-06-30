@@ -32,7 +32,7 @@ def initialize_ai_services(app):
 
     # --- Setup LLM and LlamaIndex Settings ---
     model_name = app.config.get('LLM_MODEL', 'gpt-4o')
-    Settings.llm = OpenAI(model=model_name, api_key=api_key, temperature=0.1, max_tokens=350)
+    Settings.llm = OpenAI(model=model_name, api_key=api_key, temperature=0.1, max_tokens=300)
     Settings.node_parser = SentenceSplitter(chunk_size=512, chunk_overlap=20)
     Settings.embed_model = "local:BAAI/bge-small-en-v1.5"
 
@@ -66,7 +66,7 @@ def initialize_ai_services(app):
         "Your role is to provide clear, actionable tips and information about disaster preparedness, guide users "
         "through creating robust preparedness plans, and deliver your responses in a reassuring, friendly, and calm tone. "
         "If a user asks about anything outside disaster preparedness, politely decline and steer them back to emergency or disaster planning. "
-        "Keep your response concise: under 350 tokens."
+        "Keep your response concise - under 250 tokens and return response in markdown if needed."
     )
     
     # The modern way to create a chat engine with a system prompt and conversation history
