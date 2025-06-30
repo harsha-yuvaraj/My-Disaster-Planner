@@ -14,12 +14,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of your application code into the container
 COPY . .
 
-# Pre-build the AI index during the image build process
-# This RUN command will execute our app factory, which in turn calls
-# the initialize_ai_services() function to build the index.
-# This makes our container start little faster in production.
-RUN python -c "from app import create_app; create_app()"
-
 # Expose the port Gunicorn will run on
 EXPOSE 5000
 
