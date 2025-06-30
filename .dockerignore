@@ -1,0 +1,51 @@
+# Python virtual environment
+venv/
+*.venv
+
+# Environment files - DO NOT COMMIT SECRETS
+.env
+.env.*
+
+# Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build and distribution output
+dist/
+build/
+out/
+*.egg-info/
+
+# Local database files
+app.db
+*.sqlite3
+
+# Local AI Index store
+index_store/
+
+# Local session files (if using filesystem sessions)
+flask_session/
+
+# Log files
+*.log
+logs/
+npm-debug.log*
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Test coverage reports
+coverage
+.coverage
+
+# IDE/editor configuration
+.vscode/
+.idea/
+
+# Temporary files
+*.swp
+*.swo
+*.tmp
