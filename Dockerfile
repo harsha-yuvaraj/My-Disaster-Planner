@@ -8,6 +8,10 @@ WORKDIR /app
 # Copy the dependencies file and install them
 COPY requirements.txt .
 
+# Install system-level dependencies required by Python packages (like WeasyPrint for PDF generation)
+# This must be done BEFORE installing the Python packages with pip.
+RUN apt-get update && apt-get install -y && apt install -y weasyprint 
+
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
