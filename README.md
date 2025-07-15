@@ -9,12 +9,12 @@ A web app to help caregivers create personalized disaster preparedness plans for
 ### Key Features
 
 * **Guided Workflow**: A modular wizard that walks users through each stage of planning, saving their progress along the way.
-* **Location-based Risk Analysis**: Integrates with external APIs to provide live, location-based data:
-    * **FEMA Flood API**: Assesses the flood risk for a user's specific address.
-    * **Google Geocoding & Routes API**: Converts addresses to coordinates and calculates travel time to evacuation destinations.
-* **AI-Powered Chatbot**: A Retrieval-Augmented Generation (RAG) chatbot built with LlamaIndex provides instant answers to disaster preparedness questions.
+* **Location-based Risk Analysis**: Integrates with external APIs to provide location-based data:
+    * **Google Geocoding & FEMA Flood Map API**: Converts addresses to coordinates and assesses the flood risk for a user's specific address.
+    * **Google Routes API**: Calculates travel time to evacuation destinations.
+* **AI Chatbot**: A Retrieval-Augmented Generation (RAG) chatbot built with LlamaIndex provides instant, context-aware answers to disaster preparedness questions.
 * **Florida-Specific Tailoring**: Automatically provides users in Florida with a direct link to their local county's emergency management website for the most accurate local guidance.
-* **Dynamic PDF Generation**: Creates a final, personalized PDF safety plan tailored to each user's specific needs.
+* **Dynamic PDF Generation**: Creates a final, personalized PDF disaster plan tailored to each user's specific needs.
 * **Secure Storage & Delivery**: Stores generated plans securely in Amazon S3 and can deliver them directly to users via email.
 * **Responsive Design**: A clean, modern, and fully responsive interface built to be accessible on desktop, tablet, and mobile devices.
 
@@ -25,7 +25,7 @@ A web app to help caregivers create personalized disaster preparedness plans for
 * **Backend**: Python, Flask
 * **Frontend**: HTML5, CSS, JavaScript, Bootstrap 5
 * **Database & ORM**: PostgreSQL, SQLAlchemy
-* **RAG Chatbot**: LlamaIndex, OpenAI API
+* **AI Chatbot**: LlamaIndex, OpenAI API
 * **Deployment**: AWS, Docker, Nginx
 * **APIs & Services**:
     * Google APIs (Geocoding, Routes)
