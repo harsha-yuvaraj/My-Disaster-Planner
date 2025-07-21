@@ -32,3 +32,7 @@ A web app to help caregivers create personalized disaster preparedness plans for
     * FEMA Flood Map API
     * Mailjet (for email delivery)
     * WeasyPrint (for PDF generation)
+
+---
+
+### Web App is currently offine. 
