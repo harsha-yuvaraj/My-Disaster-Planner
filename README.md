@@ -35,4 +35,4 @@ A web app to help caregivers create personalized disaster preparedness plans for
 
 ---
 
-### Web App is currently offine. 
+### Web App is currently offline.
