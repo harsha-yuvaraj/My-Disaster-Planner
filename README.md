@@ -34,5 +34,3 @@ A web app to help caregivers create personalized disaster preparedness plans for
     * WeasyPrint (for PDF generation)
 
 ---
-
-### Web App is currently offline.
