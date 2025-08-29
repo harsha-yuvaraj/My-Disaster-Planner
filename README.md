@@ -2,7 +2,7 @@
 
 A web app to help caregivers create personalized disaster preparedness plans for older adults and other vulnerable individuals. Preparing for a disaster can be an overwhelming process, and our web app is designed to simplify it by providing a step-by-step, guided workflow. 
 
-**Award winner at the 2025 Tech for Aging Hackathon.**
+**Award winner at the 2025 Tech for Aging Hackathon** hosted by The Center for Innovation, Technology, and Aging at the University of South Florida.
 
 ---
 
