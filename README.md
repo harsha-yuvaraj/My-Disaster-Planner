@@ -5,7 +5,11 @@ A web app to help caregivers create personalized disaster preparedness plans for
 **Award winner at the 2025 Tech for Aging Hackathon** hosted by The Center for Innovation, Technology, and Aging at the University of South Florida.
 
 ---
-![4_Main_Dashboard](https://github.com/user-attachments/assets/7aa27e14-547d-4883-b2c4-45bffa618cd9)
+![7_quicklinks](https://github.com/user-attachments/assets/9b43a8df-51a7-474a-bf89-afc4853284aa)
+
+![5_plan_process](https://github.com/user-attachments/assets/87532c98-1d9e-4366-9aea-36b6c28e1cf0)
+
+![6_Chatbot](https://github.com/user-attachments/assets/1499b578-c95e-49cf-a5e5-e32aee06ebd7)
 
 ### Key Features
 
